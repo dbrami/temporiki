@@ -5,10 +5,10 @@ type: log
 
 # Activity Log
 
-> Append-only хронологический лог всех операций wiki.
+> Append-only chronological log of all wiki operations.
 
-## [2026-04-09] init | Wiki инициализирована
-- Создана структура директорий (raw/, wiki/)
-- Создана схема (CLAUDE.md)
-- Созданы index.md и log.md
-- Шаблон Memoriki: LLM Wiki (Karpathy) + MemPalace
+## [2026-04-09] init | Wiki initialized
+- Created directory structure (raw/, wiki/)
+- Created schema (CLAUDE.md)
+- Created index.md and log.md
+- Template: Memoriki (LLM Wiki + MemPalace)

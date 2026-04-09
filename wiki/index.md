@@ -6,11 +6,11 @@ updated: 2026-04-09
 
 # Wiki Index
 
-> Каталог всех страниц wiki. Обновляется LLM при каждом ingest.
+> Catalog of all wiki pages. Updated by LLM on every ingest.
 
 ## Entities
 
-(пока пусто - добавь первый источник в raw/ и попроси LLM сделать ingest)
+(empty - add your first source to raw/ and ask LLM to ingest it)
 
 ## Concepts
 
