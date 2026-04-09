@@ -1,0 +1,15 @@
+wing: my_wiki
+rooms:
+- name: raw
+  description: Source documents from raw/
+  keywords:
+  - raw
+  - source
+- name: documentation
+  description: Wiki pages from wiki/
+  keywords:
+  - documentation
+  - wiki
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []
