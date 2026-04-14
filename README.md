@@ -164,7 +164,7 @@ Temporiki does not eliminate hallucinations — no RAG system does. It narrows t
 
 Release command:
 ```bash
-./.temporiki/scripts/release.sh 0.1.2
+./.temporiki/scripts/release.sh 0.1.3
 git push origin main --follow-tags
 ```
 
