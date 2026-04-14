@@ -31,6 +31,20 @@ def test_ingest_delta_tracks_only_new_or_changed_sources(tmp_path: Path) -> None
     assert "raw/a.md" in manifest["sources"]
 
 
+def test_ingest_delta_relocates_clippings_into_raw_webclips(tmp_path: Path) -> None:
+    write(tmp_path / "Clippings" / "clip.md", "first")
+    write(tmp_path / "raw" / "webclips" / "clip.md", "existing")
+    write(tmp_path / "wiki" / "index.md", "# Index\n")
+    write(tmp_path / "wiki" / "log.md", "# Log\n")
+
+    changed = ingest_delta(tmp_path)
+    assert {item["path"] for item in changed} == {"raw/webclips/clip-1.md", "raw/webclips/clip.md"}
+
+    assert not (tmp_path / "Clippings").exists()
+    assert (tmp_path / "raw" / "webclips" / "clip.md").read_text(encoding="utf-8") == "existing"
+    assert (tmp_path / "raw" / "webclips" / "clip-1.md").read_text(encoding="utf-8") == "first"
+
+
 def test_lint_wiki_reports_orphans_and_missing_frontmatter(tmp_path: Path) -> None:
     write(
         tmp_path / "wiki" / "concepts" / "a.md",

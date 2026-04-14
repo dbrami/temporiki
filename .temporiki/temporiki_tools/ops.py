@@ -4,6 +4,7 @@ import datetime as dt
 import hashlib
 import json
 import re
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -57,8 +58,48 @@ def _append_log(root: Path, operation: str, description: str) -> None:
         f.write(entry)
 
 
+def _move_to_webclips(src: Path, dst_dir: Path) -> Path:
+    dst = dst_dir / src.name
+    if not dst.exists():
+        return Path(shutil.move(str(src), str(dst)))
+
+    stem = src.stem
+    suffix = src.suffix
+    i = 1
+    while True:
+        candidate = dst_dir / f"{stem}-{i}{suffix}"
+        if not candidate.exists():
+            return Path(shutil.move(str(src), str(candidate)))
+        i += 1
+
+
+def _relocate_clippings_to_webclips(root: Path) -> list[str]:
+    clippings_dir = root / "Clippings"
+    if not clippings_dir.is_dir():
+        return []
+
+    webclips_dir = root / "raw" / "webclips"
+    webclips_dir.mkdir(parents=True, exist_ok=True)
+
+    moved: list[str] = []
+    for entry in sorted(clippings_dir.iterdir()):
+        if entry.name == ".gitkeep":
+            continue
+        target = _move_to_webclips(entry, webclips_dir)
+        moved.append(_rel(target, root))
+
+    try:
+        clippings_dir.rmdir()
+    except OSError:
+        # Non-empty directory should not break ingestion; future cycles can retry.
+        pass
+
+    return moved
+
+
 def ingest_delta(root: Path) -> list[dict[str, str]]:
     root = root.resolve()
+    _relocate_clippings_to_webclips(root)
     raw_dir = root / "raw"
     wiki_dir = root / "wiki"
     wiki_dir.mkdir(parents=True, exist_ok=True)
