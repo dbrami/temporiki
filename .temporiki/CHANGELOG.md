@@ -6,6 +6,15 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-04-14
+### Added
+- Auto-save for high-confidence `palace-search` results into `wiki/queries/` (compounding query knowledge by default).
+- Lint check `missing_from_index` for wiki pages not represented in `wiki/index.md`.
+- Lint check `decision_conflicts` for overlapping active decisions on the same topic.
+
+### Changed
+- `palace-search` output now includes `auto_saved` state and optional `saved_query_path` / `auto_save_reason`.
+
 ## [0.1.5] - 2026-04-14
 ### Added
 - `wiki/meta/webclips-activity.md` dashboard (Dataview): shows ingress inbox files and recent archived clips.

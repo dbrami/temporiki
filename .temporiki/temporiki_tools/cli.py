@@ -17,6 +17,27 @@ from temporiki_tools.ops import ingest_delta, lint_wiki, save_query_result
 app = typer.Typer(no_args_is_help=True)
 
 
+def _top_confidence(results: list[dict[str, object]]) -> float:
+    if not results:
+        return 0.0
+    return float(results[0].get("confidence", 0.0))
+
+
+def _render_auto_answer(results: list[dict[str, object]], max_items: int = 3) -> str:
+    lines: list[str] = []
+    for i, r in enumerate(results[:max_items], start=1):
+        text = str(r.get("text", "")).strip().replace("\n", " ")
+        source = str(r.get("source_file", ""))
+        confidence = float(r.get("confidence", 0.0))
+        provenance = str(r.get("provenance", ""))
+        if len(text) > 240:
+            text = text[:237] + "..."
+        lines.append(
+            f"{i}. {text}\n   - source: {source}\n   - confidence: {confidence:.3f} ({provenance})"
+        )
+    return "\n".join(lines) if lines else "No results."
+
+
 @app.command("ingest")
 def ingest(root: Path = Path(".")) -> None:
     changed = ingest_delta(root)
@@ -119,7 +140,10 @@ def palace_search(
     room: str | None = None,
     n_results: int = 5,
     as_of: str | None = None,
+    auto_save: bool = True,
+    auto_save_min_confidence: float = 0.85,
 ) -> None:
+    root = root.resolve()
     out = auto_search(
         root=root,
         query=query,
@@ -128,6 +152,18 @@ def palace_search(
         n_results=n_results,
         as_of=as_of,
     )
+    results = out.get("results", [])
+    if isinstance(results, list) and auto_save and results:
+        top_conf = _top_confidence(results)
+        if top_conf >= max(0.0, min(1.0, auto_save_min_confidence)):
+            answer = _render_auto_answer(results)
+            tags = ["query", "auto", str(out.get("strategy", "unknown"))]
+            saved = save_query_result(root=root, question=query, answer=answer, tags=tags)
+            out["saved_query_path"] = saved.relative_to(root).as_posix()
+            out["auto_saved"] = True
+        else:
+            out["auto_saved"] = False
+            out["auto_save_reason"] = f"top_confidence={top_conf:.3f} below threshold={auto_save_min_confidence:.3f}"
     typer.echo(json.dumps(out, indent=2))
 
 

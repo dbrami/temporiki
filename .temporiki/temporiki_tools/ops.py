@@ -256,6 +256,18 @@ def _autofix_frontmatter(path: Path, root: Path, body: str) -> None:
     path.write_text(rendered + "\n" + normalized_body, encoding="utf-8")
 
 
+def _date_or_none(s: Any) -> dt.date | None:
+    if s is None:
+        return None
+    raw = str(s).strip().lower()
+    if raw in {"", "none", "null", "indefinite"}:
+        return None
+    try:
+        return dt.date.fromisoformat(raw)
+    except ValueError:
+        return None
+
+
 def lint_wiki(root: Path, autofix: bool = False) -> dict[str, list[str]]:
     root = root.resolve()
     wiki_root = root / "wiki"
@@ -263,11 +275,13 @@ def lint_wiki(root: Path, autofix: bool = False) -> dict[str, list[str]]:
     pages = [p for p in wiki_root.rglob("*.md") if p.name not in {"index.md", "log.md"}]
 
     by_title: dict[str, str] = {}
+    title_by_page: dict[str, str] = {}
     missing_frontmatter: list[str] = []
     invalid_frontmatter: list[str] = []
     autofixed_frontmatter: list[str] = []
     links_by_page: dict[str, set[str]] = {}
     inbound: dict[str, int] = {}
+    decision_entries: list[dict[str, Any]] = []
 
     for page in pages:
         rel = _rel(page, root)
@@ -298,7 +312,20 @@ def lint_wiki(root: Path, autofix: bool = False) -> dict[str, list[str]]:
                         invalid_frontmatter = [x for x in invalid_frontmatter if x != rel]
 
             if "title" in fm:
-                by_title[str(fm["title"])] = rel
+                title = str(fm["title"])
+                by_title[title] = rel
+                title_by_page[rel] = title
+            if str(fm.get("type", "")) == "decision":
+                title = str(fm.get("title", page.stem))
+                topic = re.sub(r"^decision on\s+", "", title.strip(), flags=re.IGNORECASE).lower()
+                decision_entries.append(
+                    {
+                        "topic": topic or title.lower(),
+                        "path": rel,
+                        "start": _date_or_none(fm.get("date")),
+                        "end": _date_or_none(fm.get("validity_until")),
+                    }
+                )
 
         links = set(WIKILINK_RE.findall(body))
         links_by_page[rel] = links
@@ -323,12 +350,43 @@ def lint_wiki(root: Path, autofix: bool = False) -> dict[str, list[str]]:
         ]
     )
 
+    index_path = wiki_root / "index.md"
+    index_text = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
+    index_links = set(WIKILINK_RE.findall(index_text))
+    missing_from_index: list[str] = []
+    for page in sorted(pages):
+        rel = _rel(page, root)
+        rel_no_ext = rel[:-3] if rel.endswith(".md") else rel
+        title = title_by_page.get(rel, "")
+        if rel in index_links or rel_no_ext in index_links or (title and title in index_links):
+            continue
+        missing_from_index.append(rel)
+
+    today = dt.date.today()
+    active_by_topic: dict[str, list[str]] = {}
+    for entry in decision_entries:
+        start = entry["start"]
+        end = entry["end"]
+        if start and start > today:
+            continue
+        if end and end < today:
+            continue
+        active_by_topic.setdefault(str(entry["topic"]), []).append(str(entry["path"]))
+
+    decision_conflicts: list[str] = []
+    for topic, paths in sorted(active_by_topic.items()):
+        uniq = sorted(set(paths))
+        if len(uniq) > 1:
+            decision_conflicts.append(f"{topic}: {', '.join(uniq)}")
+
     return {
         "missing_frontmatter": sorted(set(missing_frontmatter) - set(autofixed_frontmatter)),
         "invalid_frontmatter": sorted(set(invalid_frontmatter)),
         "autofixed_frontmatter": sorted(set(autofixed_frontmatter)),
         "broken_links": sorted(broken),
         "orphans": orphans,
+        "missing_from_index": missing_from_index,
+        "decision_conflicts": decision_conflicts,
     }
 
 

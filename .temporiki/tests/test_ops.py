@@ -95,6 +95,41 @@ def test_lint_wiki_reports_orphans_and_missing_frontmatter(tmp_path: Path) -> No
     assert "wiki/concepts/b.md" in report["missing_frontmatter"]
     assert "B" in report["broken_links"]
     assert "wiki/concepts/a.md" in report["orphans"]
+    assert "wiki/concepts/a.md" in report["missing_from_index"]
+
+
+def test_lint_wiki_flags_active_decision_conflicts(tmp_path: Path) -> None:
+    write(
+        tmp_path / "wiki" / "decisions" / "a.md",
+        "---\n"
+        "title: Decision on Auth\n"
+        "type: decision\n"
+        "sources: [raw/a.md]\n"
+        "related: []\n"
+        "created: 2026-04-14\n"
+        "updated: 2026-04-14\n"
+        "date: 2026-04-10\n"
+        "validity_until: indefinite\n"
+        "---\n\nA.\n",
+    )
+    write(
+        tmp_path / "wiki" / "decisions" / "b.md",
+        "---\n"
+        "title: Decision on Auth\n"
+        "type: decision\n"
+        "sources: [raw/b.md]\n"
+        "related: []\n"
+        "created: 2026-04-14\n"
+        "updated: 2026-04-14\n"
+        "date: 2026-04-11\n"
+        "validity_until: indefinite\n"
+        "---\n\nB.\n",
+    )
+    write(tmp_path / "wiki" / "index.md", "# Index\n")
+    write(tmp_path / "wiki" / "log.md", "# Log\n")
+
+    report = lint_wiki(tmp_path)
+    assert any("decision on auth" in item or "auth:" in item for item in report["decision_conflicts"])
 
 
 def test_save_query_result_creates_query_page_and_updates_index_and_log(tmp_path: Path) -> None:

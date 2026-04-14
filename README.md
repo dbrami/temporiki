@@ -18,6 +18,7 @@ Built on Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893
 **2. Organize** — Temporiki reads your sources, extracts key facts and decisions, creates linked wiki pages, indexes everything for search, and auto-moves processed webclips to `raw/webclips/_archive/YYYY-MM/` (with wiki `sources:` links rewritten). Happens automatically in the background.
 
 **3. Ask** — Query your knowledge base in natural language. Get answers grounded in your own material, with citations and timestamps so you know where it came from and when.
+High-confidence `palace-search` results are auto-saved into `wiki/queries/` so insights compound instead of staying in chat.
 
 ## Quick Start
 
@@ -123,7 +124,10 @@ uv --project .temporiki run temporiki query "What decisions are active?" --answe
 
 - Hash-based delta ingest tracked in `.manifest.json`
 - Query save-back to `wiki/queries/` (compounding knowledge)
+- High-confidence auto-save from `palace-search` to `wiki/queries/`
 - Wiki linting for missing frontmatter, broken links, and orphans
+- Lint checks for pages missing from `wiki/index.md`
+- Lint contradiction watch for overlapping active decisions on the same topic
 - Built-in `mempalace-lite` (SQLite FTS5 memory search + temporal decision query)
 - Thin Chroma integration via `chromadb-client` (HTTP mode)
 - Hybrid retrieval reranking with confidence + citation rationale
