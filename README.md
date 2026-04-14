@@ -46,6 +46,38 @@ Then your daily flow is:
 
 No manual `uv run ...` commands are required for normal use.
 
+## Demo
+
+Add a 15-30 second GIF or short Loom showing:
+1. Drop a clipped page into `raw/webclips/`.
+2. Obsidian vault reflects updated knowledge pages.
+3. LLM terminal query returns temporal answer with citations.
+
+Suggested embed:
+
+```markdown
+![Zero-command Temporiki flow](docs/media/temporiki-zero-flow.gif)
+```
+
+Or Loom:
+
+```markdown
+[Watch the 25s zero-command flow](https://www.loom.com/share/your-video-id)
+```
+
+## Comparison
+
+Temporiki is built on and significantly extended from the original Memoriki foundation.
+
+| Capability | Original Memoriki | Temporiki |
+|---|---|---|
+| Core pattern | Karpathy LLM Wiki | Karpathy LLM Wiki + temporal Context Graph |
+| Storage | Wiki-first, manual ops | Dual memory: SQLite FTS5 + Chroma (auto-routed) |
+| Daily UX | Manual Python command workflow | Zero-command daily flow (`./hooks/obsidian-zero.sh`) |
+| Obsidian integration | Basic vault usage | Web Clipper inbox + dashboards + templates |
+| Temporal reasoning | Limited explicit precedence tracking | Time-scoped decision KG with `as-of` query support |
+| Automation | Partial/manual | Background monitor (ingest, lint, health, indexing) |
+
 ## Optional Developer CLI
 
 ```bash
