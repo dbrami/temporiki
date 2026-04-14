@@ -6,6 +6,15 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-04-14
+### Added
+- Hidden system layout (`.temporiki/`) so Obsidian root view stays focused on knowledge folders (`raw/`, `wiki/`).
+- Automatic Obsidian Files & Links default for `attachmentFolderPath = raw/webclips` during onboarding/bootstrap.
+
+### Changed
+- Hooks, scripts, CI workflows, and docs now operate via `uv --project .temporiki ...`.
+- Zero-command bootstrap now applies full onboarding defaults (templates + vault config) rather than templates alone.
+
 ## [0.1.2] - 2026-04-14
 ### Added
 - `uv run temporiki onboard` guided setup command that bootstraps folder structure, templates, and setup checklist output.

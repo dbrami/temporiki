@@ -12,8 +12,12 @@ if [[ "$KIND" != "patch" && "$KIND" != "minor" && "$KIND" != "major" ]]; then
   exit 1
 fi
 
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+PROJECT_DIR="$ROOT_DIR/.temporiki"
+cd "$ROOT_DIR"
+
 CURRENT="$(
-  sed -nE 's/^version = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/p' pyproject.toml \
+  sed -nE 's/^version = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/p' "$PROJECT_DIR/pyproject.toml" \
     | head -n1
 )"
 if [[ -z "$CURRENT" ]]; then
@@ -38,9 +42,8 @@ esac
 NEXT="${MAJOR}.${MINOR}.${PATCH}"
 TODAY="$(date +%F)"
 
-perl -0pi -e "s/version = \"[0-9]+\\.[0-9]+\\.[0-9]+\"/version = \"$NEXT\"/" pyproject.toml
-perl -0pi -e "s/## \\[Unreleased\\]\\n/## [Unreleased]\\n\\n## [$NEXT] - $TODAY\\n/" CHANGELOG.md
+perl -0pi -e "s/version = \"[0-9]+\\.[0-9]+\\.[0-9]+\"/version = \"$NEXT\"/" "$PROJECT_DIR/pyproject.toml"
+perl -0pi -e "s/## \\[Unreleased\\]\\n/## [Unreleased]\\n\\n## [$NEXT] - $TODAY\\n/" "$PROJECT_DIR/CHANGELOG.md"
 
 echo "Version bumped: $CURRENT -> $NEXT"
 echo "Next: fill changelog notes for $NEXT, then commit."
-

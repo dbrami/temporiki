@@ -27,12 +27,13 @@ git clone https://github.com/dbrami/temporiki.git
 cd temporiki
 
 # Bootstrap (creates venv, installs deps, sets up Obsidian vault)
-./hooks/obsidian-zero.sh
+./.temporiki/hooks/obsidian-zero.sh
 ```
 
 **That's it.** Drop files into `raw/`, clip pages with Web Clipper to `raw/webclips/`, and ask your agent questions. Temporiki handles the rest.
+`./.temporiki/hooks/obsidian-zero.sh` also auto-sets Obsidian `Attachment folder path` to `raw/webclips`.
 
-Prefer a guided walkthrough? Run `uv run temporiki onboard` for an interactive checklist.
+Prefer a guided walkthrough? Run `uv --project .temporiki run temporiki onboard` for an interactive checklist.
 
 ## Demo
 
@@ -83,9 +84,9 @@ temporiki/
     synthesis/
     decisions/
     queries/
-  AGENTS.md               # Agent schema (Codex/OpenCode/Cursor)
-  CLAUDE.md               # Claude compatibility mirror
-  mempalace.yaml
+  .temporiki/AGENTS.md               # Agent schema (Codex/OpenCode/Cursor)
+  .temporiki/CLAUDE.md               # Claude compatibility mirror
+  .temporiki/mempalace.yaml
   .memplite/palace.sqlite3 # Lightweight memory DB (created on demand)
 ```
 
@@ -94,7 +95,7 @@ temporiki/
 One-time Obsidian setup:
 1. Open Obsidian and create/select a vault from the repo folder.
 2. Install/enable Obsidian Terminal and Web Clipper.
-3. Set Web Clipper target folder to `raw/webclips/`.
+3. (Optional) confirm Web Clipper target folder is `raw/webclips/` (Temporiki auto-sets Obsidian attachment path there).
 
 Daily use:
 1. Open Obsidian vault.
@@ -106,14 +107,14 @@ No manual `uv run ...` commands are required for normal use.
 ### Optional Developer CLI
 
 ```bash
-uv run temporiki ingest
-uv run temporiki onboard
-uv run temporiki palace-mine
-uv run temporiki palace-search "auth decision"
-uv run temporiki palace-kg-query --as-of 2026-04-13
-uv run temporiki lint
-uv run temporiki lint --autofix
-uv run temporiki query "What decisions are active?" --answer "..."
+uv --project .temporiki run temporiki ingest
+uv --project .temporiki run temporiki onboard
+uv --project .temporiki run temporiki palace-mine
+uv --project .temporiki run temporiki palace-search "auth decision"
+uv --project .temporiki run temporiki palace-kg-query --as-of 2026-04-13
+uv --project .temporiki run temporiki lint
+uv --project .temporiki run temporiki lint --autofix
+uv --project .temporiki run temporiki query "What decisions are active?" --answer "..."
 ```
 
 ### What Is Implemented
@@ -126,9 +127,9 @@ uv run temporiki query "What decisions are active?" --answer "..."
 - Hybrid retrieval reranking with confidence + citation rationale
 - Intelligent query routing (KG -> Hybrid -> SQLite fallback)
 - Pydantic + YAML schema validation with lint autofix support
-- Context Graph mode guidance in `AGENTS.md` (`wiki/decisions/` + temporal precedence)
+- Context Graph mode guidance in `.temporiki/AGENTS.md` (`wiki/decisions/` + temporal precedence)
 - Session-launch hook for local Chroma Docker autostart
-- Session-start daemon hook (`hooks/session-start.sh`) for automatic monitoring
+- Session-start daemon hook (`.temporiki/hooks/session-start.sh`) for automatic monitoring
 - Web Clipper inbox at `raw/webclips/` with automatic ingest/index loop
 - Lightweight default install: no `chromadb`/`kubernetes` stack unless `--extra mempalace` is requested
 
@@ -156,23 +157,23 @@ Temporiki does not eliminate hallucinations — no RAG system does. It narrows t
 ### Versioning
 
 - SemVer tags are used (`vMAJOR.MINOR.PATCH`).
-- `pyproject.toml` is the authoritative package version.
-- `CHANGELOG.md` tracks release notes.
+- `.temporiki/pyproject.toml` is the authoritative package version.
+- `.temporiki/CHANGELOG.md` tracks release notes.
 - GitHub Releases are auto-created when a SemVer tag is pushed.
 - Version Guard CI fails if impactful runtime changes are made without a version bump and changelog update.
 
 Release command:
 ```bash
-./scripts/release.sh 0.1.2
+./.temporiki/scripts/release.sh 0.1.2
 git push origin main --follow-tags
 ```
 
 For day-to-day work:
 ```bash
 # Bump version based on change scope
-./scripts/bump_version.sh patch   # bugfix/small behavior change
-./scripts/bump_version.sh minor   # backward-compatible feature
-./scripts/bump_version.sh major   # breaking change
+./.temporiki/scripts/bump_version.sh patch   # bugfix/small behavior change
+./.temporiki/scripts/bump_version.sh minor   # backward-compatible feature
+./.temporiki/scripts/bump_version.sh major   # breaking change
 ```
 
 </details>

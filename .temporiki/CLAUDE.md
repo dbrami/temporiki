@@ -1,6 +1,6 @@
 # Compatibility Note
 
-Claude Code users should follow `AGENTS.md`.
+Claude Code users should follow `.temporiki/AGENTS.md`.
 
 This file intentionally mirrors the same schema so all agents use one workflow.
 
@@ -17,9 +17,9 @@ The agent maintains a persistent wiki in `wiki/` from immutable sources in `raw/
 ## Directory Structure
 ```
 temporiki/
-  AGENTS.md              # Agent schema (Codex/OpenCode/Cursor)
-  CLAUDE.md              # Compatibility mirror for Claude Code
-  idea-file.md           # Karpathy's original idea
+  .temporiki/AGENTS.md   # Agent schema (Codex/OpenCode/Cursor)
+  .temporiki/CLAUDE.md   # Compatibility mirror for Claude Code
+  .temporiki/idea-file.md # Karpathy's original idea
   raw/                   # Immutable source material
   wiki/
     index.md             # Master index (always current)
@@ -33,7 +33,7 @@ temporiki/
 ```
 
 ## Core Rules
-0. Mandatory first action each session: run `./hooks/session-start.sh` before any analysis.
+0. Mandatory first action each session: run `./.temporiki/hooks/session-start.sh` before any analysis.
 1. Never modify files in `raw/`.
 2. Every wiki page must have YAML frontmatter.
 3. Always update `wiki/index.md` and `wiki/log.md` after ingest/query/lint writes.
@@ -74,9 +74,9 @@ updated: YYYY-MM-DD
 
 ## Operation Flows
 ### Ingest
-1. Run `uv run temporiki ingest` to identify only new/changed sources (delta ingest).
+1. Run `uv --project .temporiki run temporiki ingest` to identify only new/changed sources (delta ingest).
    - default user inbox from Obsidian Web Clipper: `raw/webclips/`
-2. Run `uv run temporiki palace-mine` to index `raw/`:
+2. Run `uv --project .temporiki run temporiki palace-mine` to index `raw/`:
    - always into `.memplite/palace.sqlite3`
    - into Chroma too when Chroma is available
 3. Read changed sources from `raw/`.
@@ -86,24 +86,24 @@ updated: YYYY-MM-DD
 
 ### Query
 Default query flow for non-trivial questions:
-1. `uv run temporiki palace-search "<query>" --as-of YYYY-MM-DD`
+1. `uv --project .temporiki run temporiki palace-search "<query>" --as-of YYYY-MM-DD`
 2. Router strategy (automatic, no manual switch):
    - decision intent -> `wiki/decisions` temporal KG query
    - otherwise hybrid rerank of Chroma + SQLite if Chroma is healthy
    - otherwise SQLite FTS5 fallback
 3. Return currently valid precedents plus `why` traces
-4. For high-value answers, save to `wiki/queries/` (use `uv run temporiki query ...`)
+4. For high-value answers, save to `wiki/queries/` (use `uv --project .temporiki run temporiki query ...`)
 
 ### Session Launch Hook
 At session start, always run:
-`./hooks/session-start.sh`
+`./.temporiki/hooks/session-start.sh`
 
 This:
 1. starts local Chroma Docker if available, and
 2. starts a background auto-monitor loop (`palace-auto`) that watches raw/ and runs periodic lint/health (with lint autofix enabled by default).
 
 ### Lint
-Run `uv run temporiki lint --autofix` and fix:
+Run `uv --project .temporiki run temporiki lint --autofix` and fix:
 1. Missing frontmatter
 2. Invalid frontmatter schema
 3. Broken wikilinks
@@ -111,7 +111,7 @@ Run `uv run temporiki lint --autofix` and fix:
 5. Stale claims or contradictions
 
 ### Obsidian UX Pack
-Run `uv run temporiki obsidian-ux-pack` to install:
+Run `uv --project .temporiki run temporiki obsidian-ux-pack` to install:
 1. Decision timeline dashboard
 2. Stale pages dashboard
 3. Wiki health dashboard

@@ -8,6 +8,7 @@ fi
 
 BASE="$1"
 HEAD="${2:-HEAD}"
+PROJECT_DIR=".temporiki"
 
 if [[ "$BASE" =~ ^0+$ ]]; then
   echo "[version-guard] initial push detected; skipping guard"
@@ -25,31 +26,31 @@ if [[ -z "$CHANGED" ]]; then
   exit 0
 fi
 
-IMPACTFUL="$(echo "$CHANGED" | rg -N '^(temporiki_tools/|hooks/|mempalace.yaml|Makefile|scripts/)' || true)"
+IMPACTFUL="$(echo "$CHANGED" | rg -N '^(\.temporiki/temporiki_tools/|\.temporiki/hooks/|\.temporiki/mempalace.yaml|\.temporiki/Makefile|\.temporiki/scripts/)' || true)"
 if [[ -z "$IMPACTFUL" ]]; then
   echo "[version-guard] no impactful runtime changes"
   exit 0
 fi
 
-if ! echo "$CHANGED" | rg -q '^pyproject\.toml$'; then
-  echo "[version-guard] impactful changes require pyproject.toml version bump"
+if ! echo "$CHANGED" | rg -q '^\.temporiki/pyproject\.toml$'; then
+  echo "[version-guard] impactful changes require .temporiki/pyproject.toml version bump"
   echo "$IMPACTFUL"
   exit 1
 fi
 
-if ! echo "$CHANGED" | rg -q '^CHANGELOG\.md$'; then
-  echo "[version-guard] impactful changes require CHANGELOG.md update"
+if ! echo "$CHANGED" | rg -q '^\.temporiki/CHANGELOG\.md$'; then
+  echo "[version-guard] impactful changes require .temporiki/CHANGELOG.md update"
   echo "$IMPACTFUL"
   exit 1
 fi
 
 old_version="$(
-  git show "$BASE:pyproject.toml" 2>/dev/null \
+  git show "$BASE:$PROJECT_DIR/pyproject.toml" 2>/dev/null \
     | sed -nE 's/^version = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/p' \
     | head -n1
 )"
 new_version="$(
-  sed -nE 's/^version = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/p' pyproject.toml \
+  sed -nE 's/^version = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/p' "$PROJECT_DIR/pyproject.toml" \
     | head -n1
 )"
 
@@ -65,4 +66,3 @@ if [[ "$old_version" == "$new_version" ]]; then
 fi
 
 echo "[version-guard] ok: $old_version -> $new_version"
-

@@ -14,8 +14,7 @@ jobs:
           fetch-depth: 0
       - name: Run version guard (PR)
         if: github.event_name == 'pull_request'
-        run: ./scripts/check_version_guard.sh "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}"
+        run: ./.temporiki/scripts/check_version_guard.sh "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}"
       - name: Run version guard (push)
         if: github.event_name == 'push'
-        run: ./scripts/check_version_guard.sh "${{ github.event.before }}" "${{ github.sha }}"
-
+        run: ./.temporiki/scripts/check_version_guard.sh "${{ github.event.before }}" "${{ github.sha }}"

@@ -13,9 +13,9 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v4
       - name: Install deps
-        run: uv sync --extra dev --extra chroma-client
+        run: uv sync --project .temporiki --extra dev --extra chroma-client
       - name: Run tests
-        run: uv run python -m pytest -q
+        run: uv --project .temporiki run python -m pytest -q .temporiki/tests
 
   github-release:
     runs-on: ubuntu-latest
@@ -28,4 +28,3 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+PROJECT_DIR="$ROOT_DIR/.temporiki"
 cd "$ROOT_DIR"
 
 if ! command -v uv >/dev/null 2>&1; then
@@ -13,13 +14,13 @@ mkdir -p raw/webclips raw/assets wiki/queries wiki/meta wiki/_templates
 touch raw/webclips/.gitkeep raw/assets/.gitkeep
 
 echo "[temporiki] syncing lightweight runtime..."
-uv sync --extra chroma-client
+uv sync --project "$PROJECT_DIR" --extra chroma-client
 
-echo "[temporiki] installing Obsidian UX pack..."
-uv run temporiki obsidian-ux-pack
+echo "[temporiki] applying vault onboarding defaults..."
+uv --project "$PROJECT_DIR" run temporiki onboard
 
 echo "[temporiki] starting background monitor..."
-./hooks/session-start.sh
+"$PROJECT_DIR/hooks/session-start.sh"
 
 echo
 echo "[temporiki] ready."

@@ -18,7 +18,7 @@ if ! docker info >/dev/null 2>&1; then
   exit 0
 fi
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CHROMA_DATA_DIR="${TEMPORIKI_CHROMA_DATA_DIR:-${MEMORIKI_CHROMA_DATA_DIR:-$ROOT_DIR/.chroma-data}}"
 CHROMA_CONTAINER="${TEMPORIKI_CHROMA_CONTAINER:-${MEMORIKI_CHROMA_CONTAINER:-temporiki-chroma}}"
 CHROMA_PORT="${TEMPORIKI_CHROMA_PORT:-${MEMORIKI_CHROMA_PORT:-8000}}"
