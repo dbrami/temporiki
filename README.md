@@ -84,11 +84,20 @@ Any MCP-capable coding agent (Claude Code, Codex, Cursor, Gemini CLI, OpenCode, 
 - `pyproject.toml` is the authoritative package version.
 - `CHANGELOG.md` tracks release notes.
 - GitHub Releases are auto-created when a SemVer tag is pushed.
+- Version Guard CI fails if impactful runtime changes are made without a version bump and changelog update.
 
 Release command:
 ```bash
 ./scripts/release.sh 0.1.1
 git push origin main --follow-tags
+```
+
+For day-to-day work:
+```bash
+# Bump version based on change scope
+./scripts/bump_version.sh patch   # bugfix/small behavior change
+./scripts/bump_version.sh minor   # backward-compatible feature
+./scripts/bump_version.sh major   # breaking change
 ```
 
 ## Sources
