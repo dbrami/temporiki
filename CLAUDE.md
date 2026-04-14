@@ -33,6 +33,7 @@ temporiki/
 ```
 
 ## Core Rules
+0. Mandatory first action each session: run `./hooks/session-start.sh` before any analysis.
 1. Never modify files in `raw/`.
 2. Every wiki page must have YAML frontmatter.
 3. Always update `wiki/index.md` and `wiki/log.md` after ingest/query/lint writes.
@@ -74,6 +75,7 @@ updated: YYYY-MM-DD
 ## Operation Flows
 ### Ingest
 1. Run `uv run temporiki ingest` to identify only new/changed sources (delta ingest).
+   - default user inbox from Obsidian Web Clipper: `raw/webclips/`
 2. Run `uv run temporiki palace-mine` to index `raw/`:
    - always into `.memplite/palace.sqlite3`
    - into Chroma too when Chroma is available
@@ -93,7 +95,7 @@ Default query flow for non-trivial questions:
 4. For high-value answers, save to `wiki/queries/` (use `uv run temporiki query ...`)
 
 ### Session Launch Hook
-At session start run:
+At session start, always run:
 `./hooks/session-start.sh`
 
 This:

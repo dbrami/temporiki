@@ -1,4 +1,4 @@
-.PHONY: sync sync-mempalace sync-chroma-client test ingest lint lint-autofix watch palace-init palace-mine palace-search palace-kg-query palace-health session-launch palace-auto session-start session-stop obsidian-ux-pack
+.PHONY: sync sync-mempalace sync-chroma-client test ingest lint lint-autofix watch palace-init palace-mine palace-search palace-kg-query palace-health session-launch palace-auto session-start session-stop obsidian-ux-pack obsidian-zero
 
 sync:
 	uv sync --extra dev
@@ -53,3 +53,6 @@ session-stop:
 
 obsidian-ux-pack:
 	uv run temporiki obsidian-ux-pack
+
+obsidian-zero:
+	./hooks/obsidian-zero.sh

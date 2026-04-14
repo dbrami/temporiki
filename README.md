@@ -26,65 +26,36 @@ temporiki/
   .memplite/palace.sqlite3 # Lightweight memory DB (created on demand)
 ```
 
-## UV Quick Start
+## Zero-Command UX (Obsidian + LLM Chat)
 
 ```bash
-# 1. Clone your fork
+# 1) Clone your fork
 git clone https://github.com/dbrami/temporiki.git
 cd temporiki
 
-# 2. Create env and install dependencies
-uv venv
-source .venv/bin/activate
-uv sync --extra dev
-
-# 3. Initialize local memory (always on)
-uv run temporiki palace-init
-uv run temporiki palace-mine
-
-# 4. Optional Chroma client mode (thin client; no kubernetes package)
-uv sync --extra chroma-client
-./hooks/session-start.sh
-uv run temporiki palace-health
+# 2) Run one bootstrap script (no Python commands)
+./hooks/obsidian-zero.sh
 ```
 
-## CLI Operations
+Then your daily flow is:
+1. Open Obsidian and create/select vault from the repo folder.
+2. Install/enable Obsidian Terminal and Web Clipper.
+3. Set Web Clipper target folder to `raw/webclips/`.
+4. Open a terminal inside Obsidian, launch your LLM CLI (`claude`, `codex`, `gemini`, etc.), and chat.
+5. New clips dropped into `raw/webclips/` are automatically detected, catalogued, and indexed by the background monitor.
 
-All commands are uv-native:
+No manual `uv run ...` commands are required for normal use.
+
+## Optional Developer CLI
 
 ```bash
-# Delta ingest: only new/changed raw files
 uv run temporiki ingest
-
-# Index raw/ into local mempalace-lite
 uv run temporiki palace-mine
-
-# Search automatically:
-# - decision/precedent queries -> decision KG
-# - otherwise hybrid rerank (Chroma + SQLite) when Chroma is healthy
-# - fallback to SQLite FTS5 when Chroma is unavailable
 uv run temporiki palace-search "auth decision"
-
-# Query active decisions as-of a date
 uv run temporiki palace-kg-query --as-of 2026-04-13
-
-# Lint wiki structure (frontmatter, broken links, orphans)
 uv run temporiki lint
-
-# Lint + safe frontmatter autofix
 uv run temporiki lint --autofix
-
-# Save a high-value query answer back into wiki/queries/
 uv run temporiki query "What decisions are active?" --answer "..."
-
-# Watch raw/ and continuously detect deltas
-uv run temporiki watch --interval-seconds 5
-
-# Run full auto monitor loop (raw watch + auto-mine + periodic lint + health)
-uv run temporiki palace-auto
-
-# Install Obsidian dashboards + templates
-uv run temporiki obsidian-ux-pack
 ```
 
 ## What Is Implemented
@@ -100,6 +71,7 @@ uv run temporiki obsidian-ux-pack
 - Context Graph mode guidance in `AGENTS.md` (`wiki/decisions/` + temporal precedence)
 - Session-launch hook for local Chroma Docker autostart
 - Session-start daemon hook (`hooks/session-start.sh`) for automatic monitoring
+- Web Clipper inbox at `raw/webclips/` with automatic ingest/index loop
 - Lightweight default install: no `chromadb`/`kubernetes` stack unless `--extra mempalace` is requested
 
 ## Works With

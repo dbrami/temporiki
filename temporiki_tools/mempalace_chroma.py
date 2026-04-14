@@ -19,7 +19,10 @@ def _try_import_chromadb():
 
 
 def _chroma_config() -> tuple[str, str]:
-    base_url = os.environ.get("MEMORIKI_CHROMA_URL", "http://127.0.0.1:8000")
+    base_url = os.environ.get(
+        "TEMPORIKI_CHROMA_URL",
+        os.environ.get("MEMORIKI_CHROMA_URL", "http://127.0.0.1:8000"),
+    )
     collection = os.environ.get("TEMPORIKI_CHROMA_COLLECTION", "temporiki_drawers")
     return base_url, collection
 
