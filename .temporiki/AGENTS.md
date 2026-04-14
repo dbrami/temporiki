@@ -25,7 +25,7 @@ temporiki/
 ```
 
 ## Core Rules
-0. Mandatory first action each session: run `./.temporiki/hooks/session-start.sh` before any analysis.
+0. Mandatory first action each session: run `./.temporiki/hooks/session-start.sh` before any analysis. On a fresh clone, run `./.temporiki/hooks/obsidian-zero.sh` instead; at shutdown, `./.temporiki/hooks/session-stop.sh` stops the background monitor.
 1. Never modify files in `raw/`.
 2. Every wiki page must have YAML frontmatter.
 3. Always update `wiki/index.md` and `wiki/log.md` after ingest/query/lint writes.
@@ -86,13 +86,24 @@ Default query flow for non-trivial questions:
 3. Return currently valid precedents plus `why` traces
 4. For high-value answers, save to `wiki/queries/` (use `uv --project .temporiki run temporiki query ...`)
 
-### Session Launch Hook
-At session start, always run:
-`./.temporiki/hooks/session-start.sh`
+### Session Hooks
+All hooks live in `.temporiki/hooks/` and are idempotent.
 
-This:
-1. starts local Chroma Docker if available, and
-2. starts a background auto-monitor loop (`palace-auto`) that watches raw/ and runs periodic lint/health (with lint autofix enabled by default).
+**First-time bootstrap:** `./.temporiki/hooks/obsidian-zero.sh`
+Scaffolds `raw/webclips`, `raw/assets`, `wiki/queries`, `wiki/meta`, `wiki/_templates`, runs `uv sync --extra chroma-client`, applies `temporiki onboard` defaults (including Obsidian Web Clipper attachment path), then invokes `session-start.sh`.
+
+**Every session (mandatory first action):** `./.temporiki/hooks/session-start.sh`
+1. Ensures vault folders exist (`raw/webclips`, `raw/assets`, `wiki/queries`, `wiki/meta`, `wiki/_templates`).
+2. Runs `uv sync --project .temporiki --extra chroma-client` (best-effort).
+3. Runs `uv --project .temporiki run temporiki onboard` to refresh Obsidian/vault defaults.
+4. Calls `session-launch.sh` to start local Chroma Docker when available (honors `TEMPORIKI_DISABLE_CHROMA_AUTOSTART=1`; exports `TEMPORIKI_CHROMA_URL` / `MEMORIKI_CHROMA_URL`).
+5. Starts background `temporiki palace-auto` monitor if not already running; PID at `.memplite/auto.pid`, log at `.memplite/auto.log`. The monitor watches `raw/` and runs periodic lint/health with lint autofix enabled by default.
+
+**Chroma-only launch:** `./.temporiki/hooks/session-launch.sh`
+Starts/reuses the `temporiki-chroma` Docker container on `${TEMPORIKI_CHROMA_PORT:-8000}` with data at `.chroma-data/`. No-op when Docker is unavailable.
+
+**Session stop:** `./.temporiki/hooks/session-stop.sh`
+Kills the `palace-auto` process via `.memplite/auto.pid` and removes the pid file.
 
 ### Lint
 Run `uv --project .temporiki run temporiki lint --autofix` and fix:
