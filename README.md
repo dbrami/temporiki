@@ -1,88 +1,118 @@
 # Memoriki
 
-Personal knowledge base with real memory. Combines [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) (Andrej Karpathy) + [MemPalace](https://github.com/milla-jovovich/mempalace) (MCP server).
+Personal knowledge base with real memory. Combines [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) (Andrej Karpathy) + automatic dual-store memory:
+- local SQLite FTS5 (`mempalace-lite`) always on
+- Chroma (thin HTTP client) when available
 
-Wiki gives structure. MemPalace gives memory.
-
-## The Problem
-
-- **LLM Wiki without MemPalace** = library without a catalog. Search is just grep.
-- **MemPalace without Wiki** = search engine without books. Semantic search over raw chunks.
-- **Together** = structured knowledge + semantic search + entity graph.
-
-## Three Layers of Knowledge
-
-| Layer | What it does | Tool |
-|-------|-------------|------|
-| **Wiki** | Structure, [[wiki-links]], YAML frontmatter, index | Markdown + Obsidian |
-| **MemPalace Drawers** | Semantic search over all content | `mempalace_search` |
-| **MemPalace KG** | Entity relationship graph with timestamps | `mempalace_kg_query` |
+Wiki gives structure. The router decides memory backend automatically.
 
 ## Architecture
 
 ```
 memoriki/
-  raw/                    # Your sources (articles, notes, transcripts)
-  wiki/                   # LLM-generated wiki (LLM owns this entirely)
-    index.md              # Page catalog - updated on every ingest
-    log.md                # Operation log (append-only)
-    entities/             # People, companies, products
-    concepts/             # Ideas, patterns, frameworks
-    sources/              # Summary page per source
-    synthesis/            # Cross-cutting analysis, comparisons
-  mempalace.yaml          # MemPalace config
-  CLAUDE.md               # Schema and rules for the LLM
-  idea-file.md            # Karpathy's original idea (reference)
+  raw/                    # Immutable sources
+  wiki/                   # LLM-maintained compiled knowledge
+    index.md              # Catalog
+    log.md                # Chronological operations
+    entities/
+    concepts/
+    sources/
+    synthesis/
+    decisions/
+    queries/
+  AGENTS.md               # Agent schema (Codex/OpenCode/Cursor)
+  CLAUDE.md               # Claude compatibility mirror
+  mempalace.yaml
+  .memplite/palace.sqlite3 # Lightweight memory DB (created on demand)
 ```
 
-## Quick Start
+## UV Quick Start
 
 ```bash
-# 1. Clone
-git clone https://github.com/AyanbekDos/memoriki.git my-knowledge-base
-cd my-knowledge-base
+# 1. Clone your fork
+git clone https://github.com/dbrami/memoriki.git
+cd memoriki
 
-# 2. Install MemPalace
-pip install mempalace
-mempalace init .
+# 2. Create env and install dependencies
+uv venv
+source .venv/bin/activate
+uv sync --extra dev
 
-# 3. Connect MemPalace to Claude Code
-claude mcp add mempalace -- python -m mempalace.mcp_server
+# 3. Initialize local memory (always on)
+uv run memoriki palace-init
+uv run memoriki palace-mine
 
-# 4. Drop your first source
-cp ~/some-article.md raw/
-
-# 5. Launch Claude Code and start ingesting
-claude
-# > Read raw/some-article.md and ingest it into the wiki
+# 4. Optional Chroma client mode (thin client; no kubernetes package)
+uv sync --extra chroma-client
+./hooks/session-start.sh
+uv run memoriki palace-health
 ```
 
-## Operations
+## CLI Operations
 
-- **Ingest** - drop a file into `raw/`, tell the LLM to read and integrate it into the wiki
-- **Query** - ask a question, LLM finds relevant pages and synthesizes an answer
-- **Lint** - health check: contradictions, orphans, knowledge gaps
+All commands are uv-native:
+
+```bash
+# Delta ingest: only new/changed raw files
+uv run memoriki ingest
+
+# Index raw/ into local mempalace-lite
+uv run memoriki palace-mine
+
+# Search automatically:
+# - decision/precedent queries -> decision KG
+# - otherwise hybrid rerank (Chroma + SQLite) when Chroma is healthy
+# - fallback to SQLite FTS5 when Chroma is unavailable
+uv run memoriki palace-search "auth decision"
+
+# Query active decisions as-of a date
+uv run memoriki palace-kg-query --as-of 2026-04-13
+
+# Lint wiki structure (frontmatter, broken links, orphans)
+uv run memoriki lint
+
+# Lint + safe frontmatter autofix
+uv run memoriki lint --autofix
+
+# Save a high-value query answer back into wiki/queries/
+uv run memoriki query "What decisions are active?" --answer "..."
+
+# Watch raw/ and continuously detect deltas
+uv run memoriki watch --interval-seconds 5
+
+# Run full auto monitor loop (raw watch + auto-mine + periodic lint + health)
+uv run memoriki palace-auto
+
+# Install Obsidian dashboards + templates
+uv run memoriki obsidian-ux-pack
+```
+
+## What Is Implemented
+
+- Hash-based delta ingest tracked in `.manifest.json`
+- Query save-back to `wiki/queries/` (compounding knowledge)
+- Wiki linting for missing frontmatter, broken links, and orphans
+- Built-in `mempalace-lite` (SQLite FTS5 memory search + temporal decision query)
+- Thin Chroma integration via `chromadb-client` (HTTP mode)
+- Hybrid retrieval reranking with confidence + citation rationale
+- Intelligent query routing (KG -> Hybrid -> SQLite fallback)
+- Pydantic + YAML schema validation with lint autofix support
+- Context Graph mode guidance in `AGENTS.md` (`wiki/decisions/` + temporal precedence)
+- Session-launch hook for local Chroma Docker autostart
+- Session-start daemon hook (`hooks/session-start.sh`) for automatic monitoring
+- Lightweight default install: no `chromadb`/`kubernetes` stack unless `--extra mempalace` is requested
 
 ## Works With
 
-Any MCP-compatible LLM agent:
-- **Claude Code** - use `CLAUDE.md` as-is
-- **OpenAI Codex** - rename `CLAUDE.md` to `AGENTS.md`
-- **Cursor, Gemini CLI** and other MCP-compatible tools
+Any MCP-capable coding agent (Claude Code, Codex, Cursor, Gemini CLI, OpenCode, OpenClaw).
 
-## Use Cases
+## Sources
 
-- **Founders**: customer discovery, interviews, competitors, pivots - all in one place
-- **Researchers**: papers, articles, notes - wiki with compounding synthesis
-- **Students**: lecture notes, books, projects - structured "second brain"
-- **Teams**: Slack threads, meetings, decisions - AI-maintained wiki
+- Karpathy, Andrej — LLM Wiki pattern: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+- MemPalace (reference architecture + MCP tool model): https://github.com/MemPalace/mempalace
+- Chroma docs (client/server model and API): https://docs.trychroma.com/
+- Obsidian Dataview plugin docs (dashboards/queries): https://blacksmithgu.github.io/obsidian-dataview/
 
 ## License
 
 MIT
-
-## Credits
-
-- [Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) - original LLM Wiki idea
-- [MemPalace](https://github.com/milla-jovovich/mempalace) - MCP server for semantic search and knowledge graph
-- [Claude Code](https://claude.com/claude-code) - LLM agent

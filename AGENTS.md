@@ -1,11 +1,3 @@
-# Compatibility Note
-
-Claude Code users should follow `AGENTS.md`.
-
-This file intentionally mirrors the same schema so all agents use one workflow.
-
----
-
 # Memoriki Agent Schema
 
 ## Overview

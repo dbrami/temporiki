@@ -7,16 +7,22 @@ wiki/entities/*
 wiki/concepts/*
 wiki/sources/*
 wiki/synthesis/*
+wiki/decisions/*
+wiki/queries/*
 !wiki/**/.gitkeep
 
 # MemPalace local state
 .mempalace/
+.memplite/
+.chroma-data/
+.manifest.json
 
 # Database
 *.sqlite3*
 
 # Python
 __pycache__/
+.venv/
 
 # Environment
 .env*
@@ -26,3 +32,5 @@ node_modules/
 
 # Claude Code local config
 .claude.json
+
+*.egg-info/

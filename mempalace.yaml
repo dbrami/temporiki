@@ -13,3 +13,7 @@ rooms:
 - name: general
   description: Files that don't fit other rooms
   keywords: []
+context_graph_mode: true
+auto_tag_decisions: true
+temporal_validity_windows: true
+precedent_scoring: true

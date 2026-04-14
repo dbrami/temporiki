@@ -1,0 +1,35 @@
+[project]
+name = "memoriki-tools"
+version = "0.1.0"
+description = "UV-native utilities for Memoriki workflows"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.8.0",
+  "pyyaml>=6.0.1",
+  "typer>=0.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+]
+mempalace = [
+  "mempalace>=0.1.0",
+]
+chroma-client = [
+  "chromadb-client>=1.5.7",
+]
+
+[project.scripts]
+memoriki = "memoriki_tools.cli:app"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools]
+packages = ["memoriki_tools"]
