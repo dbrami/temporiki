@@ -58,7 +58,7 @@ def _append_log(root: Path, operation: str, description: str) -> None:
         f.write(entry)
 
 
-def _move_to_webclips(src: Path, dst_dir: Path) -> Path:
+def _move_to_dir(src: Path, dst_dir: Path) -> Path:
     dst = dst_dir / src.name
     if not dst.exists():
         return Path(shutil.move(str(src), str(dst)))
@@ -85,7 +85,7 @@ def _relocate_clippings_to_webclips(root: Path) -> list[str]:
     for entry in sorted(clippings_dir.iterdir()):
         if entry.name == ".gitkeep":
             continue
-        target = _move_to_webclips(entry, webclips_dir)
+        target = _move_to_dir(entry, webclips_dir)
         moved.append(_rel(target, root))
 
     try:
@@ -95,6 +95,43 @@ def _relocate_clippings_to_webclips(root: Path) -> list[str]:
         pass
 
     return moved
+
+
+def _rewrite_wiki_sources_paths(root: Path, old_to_new: dict[str, str]) -> list[str]:
+    if not old_to_new:
+        return []
+
+    changed_pages: list[str] = []
+    wiki_root = root / "wiki"
+    for page in sorted(wiki_root.rglob("*.md")):
+        if not page.is_file():
+            continue
+        text = page.read_text(encoding="utf-8")
+        fm, body = split_frontmatter(text)
+        if not fm:
+            continue
+
+        srcs = fm.get("sources", [])
+        if not isinstance(srcs, list):
+            continue
+
+        updated = False
+        new_sources: list[Any] = []
+        for s in srcs:
+            s_str = str(s)
+            if s_str in old_to_new:
+                new_sources.append(old_to_new[s_str])
+                updated = True
+            else:
+                new_sources.append(s)
+
+        if updated:
+            fm["sources"] = new_sources
+            if "updated" in fm:
+                fm["updated"] = today_iso()
+            page.write_text(dump_frontmatter(fm) + "\n" + body.lstrip("\n"), encoding="utf-8")
+            changed_pages.append(_rel(page, root))
+    return changed_pages
 
 
 def ingest_delta(root: Path) -> list[dict[str, str]]:
@@ -138,6 +175,77 @@ def ingest_delta(root: Path) -> list[dict[str, str]]:
         _append_log(root, "ingest-delta", f"{len(changed)} source(s) changed")
 
     return changed
+
+
+def archive_webclips(
+    root: Path,
+    changed: list[dict[str, str]],
+) -> dict[str, Any]:
+    """
+    Immediately archive changed files from raw/webclips/ to raw/webclips/_archive/YYYY-MM/.
+    Updates manifest paths and rewrites wiki frontmatter sources to keep provenance valid.
+    """
+    root = root.resolve()
+    if not changed:
+        return {"changed": changed, "moved": [], "rewritten_pages": []}
+
+    old_to_new: dict[str, str] = {}
+    moved: list[dict[str, str]] = []
+
+    for item in changed:
+        rel = str(item.get("path", ""))
+        if not rel.startswith("raw/webclips/"):
+            continue
+        if rel.startswith("raw/webclips/_archive/"):
+            continue
+        src = root / rel
+        if not src.exists() or not src.is_file():
+            continue
+
+        month = dt.datetime.fromtimestamp(src.stat().st_mtime, tz=dt.UTC).strftime("%Y-%m")
+        dst_dir = root / "raw" / "webclips" / "_archive" / month
+        dst_dir.mkdir(parents=True, exist_ok=True)
+        dst = _move_to_dir(src, dst_dir)
+        new_rel = _rel(dst, root)
+        old_to_new[rel] = new_rel
+        moved.append({"from": rel, "to": new_rel})
+
+    if not moved:
+        return {"changed": changed, "moved": [], "rewritten_pages": []}
+
+    manifest_path = root / ".manifest.json"
+    manifest = _load_manifest(manifest_path)
+    sources: dict[str, dict[str, str]] = manifest.setdefault("sources", {})
+    now = _now()
+    for old_rel, new_rel in old_to_new.items():
+        entry = sources.pop(old_rel, None)
+        if entry is None:
+            entry = {
+                "sha256": _sha256(root / new_rel),
+                "last_seen": now,
+                "status": "pending_agent_ingest",
+            }
+        else:
+            entry["last_seen"] = now
+            entry["status"] = "pending_agent_ingest"
+        sources[new_rel] = entry
+    _write_manifest(manifest_path, manifest)
+
+    rewritten_pages = _rewrite_wiki_sources_paths(root, old_to_new)
+    _append_log(root, "webclips-archive", f"{len(moved)} file(s) moved to raw/webclips/_archive")
+
+    out_changed: list[dict[str, str]] = []
+    for item in changed:
+        old_rel = str(item.get("path", ""))
+        if old_rel in old_to_new:
+            new_item = dict(item)
+            new_item["path"] = old_to_new[old_rel]
+            new_item["reason"] = "archived-after-ingest"
+            out_changed.append(new_item)
+        else:
+            out_changed.append(item)
+
+    return {"changed": out_changed, "moved": moved, "rewritten_pages": rewritten_pages}
 
 
 def _autofix_frontmatter(path: Path, root: Path, body: str) -> None:

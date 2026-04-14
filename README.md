@@ -13,9 +13,9 @@ Built on Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893
 
 ## How It Works
 
-**1. Capture** — Clip web pages with Obsidian Web Clipper, paste meeting notes, or drop any file into `raw/`. That's your inbox.
+**1. Capture** — Clip web pages with Obsidian Web Clipper, paste meeting notes, or drop any file into `raw/`. `raw/webclips/` is ingress-only.
 
-**2. Organize** — Temporiki reads your sources, extracts key facts and decisions, creates linked wiki pages, and indexes everything for search. Happens automatically in the background.
+**2. Organize** — Temporiki reads your sources, extracts key facts and decisions, creates linked wiki pages, indexes everything for search, and auto-moves processed webclips to `raw/webclips/_archive/YYYY-MM/` (with wiki `sources:` links rewritten). Happens automatically in the background.
 
 **3. Ask** — Query your knowledge base in natural language. Get answers grounded in your own material, with citations and timestamps so you know where it came from and when.
 
@@ -30,7 +30,7 @@ cd temporiki
 ./.temporiki/hooks/obsidian-zero.sh
 ```
 
-**That's it.** Drop files into `raw/`, clip pages with Web Clipper to `raw/webclips/`, and ask your agent questions. Temporiki handles the rest.
+**That's it.** Drop files into `raw/`, clip pages with Web Clipper to `raw/webclips/`, and ask your agent questions. Temporiki handles the rest, including auto-archiving processed clips.
 `./.temporiki/hooks/obsidian-zero.sh` also auto-sets Obsidian `Attachment folder path` to `raw/webclips`.
 
 Prefer a guided walkthrough? Run `uv --project .temporiki run temporiki onboard` for an interactive checklist.
@@ -57,6 +57,7 @@ Suggested embed:
 | Daily workflow | Manual organization | Python commands | Zero-command (clip, drop, ask) |
 | Guided onboarding | None | Manual docs-led | `temporiki onboard` checklist |
 | Web capture | Web Clipper to a folder | Not included | Web Clipper inbox with auto-ingest |
+| Inbox clutter | User-managed | User-managed | `raw/webclips/` ingress + immediate auto-archive |
 | Temporal reasoning | None | Limited | Time-scoped decisions with `as-of` queries |
 | Background automation | None | Partial | Full (ingest, lint, health, indexing) |
 | Agent support | N/A | Claude-only | Any MCP-capable agent |
@@ -101,6 +102,7 @@ Daily use:
 1. Open Obsidian vault.
 2. Open a terminal inside Obsidian, launch your LLM CLI (`claude`, `codex`, `gemini`, etc.), and chat.
 3. Clip content to `raw/webclips/`; the background monitor auto-detects, catalogs, and indexes it.
+4. Processed clips are moved to `raw/webclips/_archive/YYYY-MM/` automatically.
 
 No manual `uv run ...` commands are required for normal use.
 
@@ -131,6 +133,7 @@ uv --project .temporiki run temporiki query "What decisions are active?" --answe
 - Session-launch hook for local Chroma Docker autostart
 - Session-start daemon hook (`.temporiki/hooks/session-start.sh`) for automatic monitoring
 - Web Clipper inbox at `raw/webclips/` with automatic ingest/index loop
+- Webclips activity dashboard at `wiki/meta/webclips-activity.md` (inbox + recent archives)
 - Lightweight default install: no `chromadb`/`kubernetes` stack unless `--extra mempalace` is requested
 
 ### Why RAG Alone Isn't Enough

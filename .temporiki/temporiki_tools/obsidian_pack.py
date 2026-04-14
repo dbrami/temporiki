@@ -49,6 +49,24 @@ WHERE updated AND date(updated) <= date(today) - dur(90 days)
 SORT updated ASC
 ```
 """,
+        root / "wiki" / "meta" / "webclips-activity.md": """# Webclips Activity
+
+## Inbox (Awaiting Archive)
+```dataview
+TABLE file.mtime as Modified
+FROM "raw/webclips"
+WHERE !contains(file.folder, "_archive")
+SORT file.mtime DESC
+```
+
+## Recently Archived
+```dataview
+TABLE file.mtime as ArchivedAt
+FROM "raw/webclips/_archive"
+SORT file.mtime DESC
+LIMIT 100
+```
+""",
         root / "wiki" / "_templates" / "decision.md": """---
 title: Decision on Topic
 type: decision

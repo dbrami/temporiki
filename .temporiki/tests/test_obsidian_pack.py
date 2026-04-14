@@ -8,5 +8,6 @@ def test_install_ux_pack_creates_dashboards_and_templates(tmp_path):
 
     assert (tmp_path / "wiki" / "meta" / "dashboard.md").exists()
     assert (tmp_path / "wiki" / "meta" / "decision-timeline.md").exists()
+    assert (tmp_path / "wiki" / "meta" / "webclips-activity.md").exists()
     assert (tmp_path / "wiki" / "_templates" / "decision.md").exists()
     assert (tmp_path / "wiki" / "_templates" / "concept.md").exists()

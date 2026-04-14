@@ -1,6 +1,6 @@
 [project]
 name = "temporiki-tools"
-version = "0.1.4"
+version = "0.1.5"
 description = "UV-native utilities for Temporiki workflows"
 requires-python = ">=3.11"
 dependencies = [

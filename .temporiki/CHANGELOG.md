@@ -6,6 +6,14 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-04-14
+### Added
+- `wiki/meta/webclips-activity.md` dashboard (Dataview): shows ingress inbox files and recent archived clips.
+
+### Changed
+- Webclips are now archived automatically after ingest detection and before mining to keep `raw/webclips/` clean.
+- Archive flow rewrites wiki `sources:` frontmatter paths and updates manifest entries so provenance remains valid after moves.
+
 ## [0.1.4] - 2026-04-14
 ### Changed
 - `obsidian-zero.sh` output is now quieter: onboarding JSON is suppressed during bootstrap.
