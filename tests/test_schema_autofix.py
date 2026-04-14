@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from memoriki_tools.ops import lint_wiki
+from temporiki_tools.ops import lint_wiki
 
 
 def write(path: Path, content: str) -> None:

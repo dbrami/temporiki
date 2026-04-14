@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from memoriki_tools.schema import (
+from temporiki_tools.schema import (
     dump_frontmatter,
     minimal_frontmatter_for,
     split_frontmatter,

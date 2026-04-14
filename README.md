@@ -39,13 +39,13 @@ source .venv/bin/activate
 uv sync --extra dev
 
 # 3. Initialize local memory (always on)
-uv run memoriki palace-init
-uv run memoriki palace-mine
+uv run temporiki palace-init
+uv run temporiki palace-mine
 
 # 4. Optional Chroma client mode (thin client; no kubernetes package)
 uv sync --extra chroma-client
 ./hooks/session-start.sh
-uv run memoriki palace-health
+uv run temporiki palace-health
 ```
 
 ## CLI Operations
@@ -54,37 +54,37 @@ All commands are uv-native:
 
 ```bash
 # Delta ingest: only new/changed raw files
-uv run memoriki ingest
+uv run temporiki ingest
 
 # Index raw/ into local mempalace-lite
-uv run memoriki palace-mine
+uv run temporiki palace-mine
 
 # Search automatically:
 # - decision/precedent queries -> decision KG
 # - otherwise hybrid rerank (Chroma + SQLite) when Chroma is healthy
 # - fallback to SQLite FTS5 when Chroma is unavailable
-uv run memoriki palace-search "auth decision"
+uv run temporiki palace-search "auth decision"
 
 # Query active decisions as-of a date
-uv run memoriki palace-kg-query --as-of 2026-04-13
+uv run temporiki palace-kg-query --as-of 2026-04-13
 
 # Lint wiki structure (frontmatter, broken links, orphans)
-uv run memoriki lint
+uv run temporiki lint
 
 # Lint + safe frontmatter autofix
-uv run memoriki lint --autofix
+uv run temporiki lint --autofix
 
 # Save a high-value query answer back into wiki/queries/
-uv run memoriki query "What decisions are active?" --answer "..."
+uv run temporiki query "What decisions are active?" --answer "..."
 
 # Watch raw/ and continuously detect deltas
-uv run memoriki watch --interval-seconds 5
+uv run temporiki watch --interval-seconds 5
 
 # Run full auto monitor loop (raw watch + auto-mine + periodic lint + health)
-uv run memoriki palace-auto
+uv run temporiki palace-auto
 
 # Install Obsidian dashboards + templates
-uv run memoriki obsidian-ux-pack
+uv run temporiki obsidian-ux-pack
 ```
 
 ## What Is Implemented

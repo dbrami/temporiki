@@ -15,13 +15,13 @@ LOG_FILE="$ROOT_DIR/.memplite/auto.log"
 if [[ -f "$PID_FILE" ]]; then
   PID="$(cat "$PID_FILE" 2>/dev/null || true)"
   if [[ -n "$PID" ]] && ps -p "$PID" >/dev/null 2>&1; then
-    echo "[memoriki] auto monitor already running (pid=$PID)"
+    echo "[temporiki] auto monitor already running (pid=$PID)"
     exit 0
   fi
 fi
 
-nohup uv run memoriki palace-auto >"$LOG_FILE" 2>&1 &
+nohup uv run temporiki palace-auto >"$LOG_FILE" 2>&1 &
 NEW_PID=$!
 echo "$NEW_PID" > "$PID_FILE"
 
-echo "[memoriki] auto monitor started (pid=$NEW_PID, log=$LOG_FILE)"
+echo "[temporiki] auto monitor started (pid=$NEW_PID, log=$LOG_FILE)"

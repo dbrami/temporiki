@@ -6,12 +6,12 @@ from pathlib import Path
 
 import typer
 
-from memoriki_tools.automation import run_cycle
-from memoriki_tools.mempalace_chroma import is_chroma_available
-from memoriki_tools.mempalace_lite import init_lite, kg_query_decisions
-from memoriki_tools.mempalace_router import auto_mine, auto_search
-from memoriki_tools.obsidian_pack import install_ux_pack
-from memoriki_tools.ops import ingest_delta, lint_wiki, save_query_result
+from temporiki_tools.automation import run_cycle
+from temporiki_tools.mempalace_chroma import is_chroma_available
+from temporiki_tools.mempalace_lite import init_lite, kg_query_decisions
+from temporiki_tools.mempalace_router import auto_mine, auto_search
+from temporiki_tools.obsidian_pack import install_ux_pack
+from temporiki_tools.ops import ingest_delta, lint_wiki, save_query_result
 
 app = typer.Typer(no_args_is_help=True)
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from memoriki_tools.obsidian_pack import install_ux_pack
+from temporiki_tools.obsidian_pack import install_ux_pack
 
 
 def test_install_ux_pack_creates_dashboards_and_templates(tmp_path):

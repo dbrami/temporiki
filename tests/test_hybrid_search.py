@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from memoriki_tools.mempalace_router import auto_search
+from temporiki_tools.mempalace_router import auto_search
 
 
 def test_auto_search_hybrid_merges_chroma_and_lite(monkeypatch) -> None:
-    monkeypatch.setattr("memoriki_tools.mempalace_router.is_chroma_available", lambda: True)
-    monkeypatch.setattr("memoriki_tools.mempalace_router.kg_query_decisions", lambda *args, **kwargs: [])
+    monkeypatch.setattr("temporiki_tools.mempalace_router.is_chroma_available", lambda: True)
+    monkeypatch.setattr("temporiki_tools.mempalace_router.kg_query_decisions", lambda *args, **kwargs: [])
     monkeypatch.setattr(
-        "memoriki_tools.mempalace_router.search_chroma",
+        "temporiki_tools.mempalace_router.search_chroma",
         lambda **kwargs: [
             {
                 "text": "Auth decision was to use OIDC",
@@ -22,7 +22,7 @@ def test_auto_search_hybrid_merges_chroma_and_lite(monkeypatch) -> None:
         ],
     )
     monkeypatch.setattr(
-        "memoriki_tools.mempalace_router.search_lite",
+        "temporiki_tools.mempalace_router.search_lite",
         lambda **kwargs: [
             {
                 "id": "x1",

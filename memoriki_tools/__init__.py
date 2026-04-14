@@ -1,1 +1,0 @@
-"""Memoriki utility package."""

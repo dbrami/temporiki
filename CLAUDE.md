@@ -6,7 +6,7 @@ This file intentionally mirrors the same schema so all agents use one workflow.
 
 ---
 
-# Memoriki Agent Schema
+# Temporiki Agent Schema
 
 ## Overview
 This repository follows Karpathy's LLM Wiki pattern with automatic dual-store retrieval:
@@ -16,7 +16,7 @@ The agent maintains a persistent wiki in `wiki/` from immutable sources in `raw/
 
 ## Directory Structure
 ```
-memoriki/
+temporiki/
   AGENTS.md              # Agent schema (Codex/OpenCode/Cursor)
   CLAUDE.md              # Compatibility mirror for Claude Code
   idea-file.md           # Karpathy's original idea
@@ -73,8 +73,8 @@ updated: YYYY-MM-DD
 
 ## Operation Flows
 ### Ingest
-1. Run `uv run memoriki ingest` to identify only new/changed sources (delta ingest).
-2. Run `uv run memoriki palace-mine` to index `raw/`:
+1. Run `uv run temporiki ingest` to identify only new/changed sources (delta ingest).
+2. Run `uv run temporiki palace-mine` to index `raw/`:
    - always into `.memplite/palace.sqlite3`
    - into Chroma too when Chroma is available
 3. Read changed sources from `raw/`.
@@ -84,13 +84,13 @@ updated: YYYY-MM-DD
 
 ### Query
 Default query flow for non-trivial questions:
-1. `uv run memoriki palace-search "<query>" --as-of YYYY-MM-DD`
+1. `uv run temporiki palace-search "<query>" --as-of YYYY-MM-DD`
 2. Router strategy (automatic, no manual switch):
    - decision intent -> `wiki/decisions` temporal KG query
    - otherwise hybrid rerank of Chroma + SQLite if Chroma is healthy
    - otherwise SQLite FTS5 fallback
 3. Return currently valid precedents plus `why` traces
-4. For high-value answers, save to `wiki/queries/` (use `uv run memoriki query ...`)
+4. For high-value answers, save to `wiki/queries/` (use `uv run temporiki query ...`)
 
 ### Session Launch Hook
 At session start run:
@@ -101,7 +101,7 @@ This:
 2. starts a background auto-monitor loop (`palace-auto`) that watches raw/ and runs periodic lint/health (with lint autofix enabled by default).
 
 ### Lint
-Run `uv run memoriki lint --autofix` and fix:
+Run `uv run temporiki lint --autofix` and fix:
 1. Missing frontmatter
 2. Invalid frontmatter schema
 3. Broken wikilinks
@@ -109,7 +109,7 @@ Run `uv run memoriki lint --autofix` and fix:
 5. Stale claims or contradictions
 
 ### Obsidian UX Pack
-Run `uv run memoriki obsidian-ux-pack` to install:
+Run `uv run temporiki obsidian-ux-pack` to install:
 1. Decision timeline dashboard
 2. Stale pages dashboard
 3. Wiki health dashboard

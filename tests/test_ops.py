@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from memoriki_tools.ops import ingest_delta, lint_wiki, save_query_result
+from temporiki_tools.ops import ingest_delta, lint_wiki, save_query_result
 
 
 def write(path: Path, content: str) -> None:

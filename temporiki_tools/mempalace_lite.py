@@ -6,7 +6,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from memoriki_tools.schema import split_frontmatter
+from temporiki_tools.schema import split_frontmatter
 
 
 def _db_path(root: Path) -> Path:

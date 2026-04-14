@@ -13,37 +13,37 @@ test:
 	uv run pytest
 
 ingest:
-	uv run memoriki ingest
+	uv run temporiki ingest
 
 lint:
-	uv run memoriki lint
+	uv run temporiki lint
 
 lint-autofix:
-	uv run memoriki lint --autofix
+	uv run temporiki lint --autofix
 
 watch:
-	uv run memoriki watch --interval-seconds 5
+	uv run temporiki watch --interval-seconds 5
 
 palace-init:
-	uv run memoriki palace-init
+	uv run temporiki palace-init
 
 palace-mine:
-	uv run memoriki palace-mine
+	uv run temporiki palace-mine
 
 palace-search:
-	uv run memoriki palace-search "$(Q)"
+	uv run temporiki palace-search "$(Q)"
 
 palace-kg-query:
-	uv run memoriki palace-kg-query --as-of "$(AS_OF)"
+	uv run temporiki palace-kg-query --as-of "$(AS_OF)"
 
 palace-health:
-	uv run memoriki palace-health
+	uv run temporiki palace-health
 
 session-launch:
 	./hooks/session-launch.sh
 
 palace-auto:
-	uv run memoriki palace-auto
+	uv run temporiki palace-auto
 
 session-start:
 	./hooks/session-start.sh
@@ -52,4 +52,4 @@ session-stop:
 	./hooks/session-stop.sh
 
 obsidian-ux-pack:
-	uv run memoriki obsidian-ux-pack
+	uv run temporiki obsidian-ux-pack

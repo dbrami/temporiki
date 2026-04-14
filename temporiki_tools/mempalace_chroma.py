@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from memoriki_tools.mempalace_lite import _chunk_text
+from temporiki_tools.mempalace_lite import _chunk_text
 
 
 def _try_import_chromadb():
@@ -20,7 +20,7 @@ def _try_import_chromadb():
 
 def _chroma_config() -> tuple[str, str]:
     base_url = os.environ.get("MEMORIKI_CHROMA_URL", "http://127.0.0.1:8000")
-    collection = os.environ.get("MEMORIKI_CHROMA_COLLECTION", "memoriki_drawers")
+    collection = os.environ.get("TEMPORIKI_CHROMA_COLLECTION", "temporiki_drawers")
     return base_url, collection
 
 

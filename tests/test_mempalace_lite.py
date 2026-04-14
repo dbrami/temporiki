@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from memoriki_tools.mempalace_lite import (
+from temporiki_tools.mempalace_lite import (
     init_lite,
     kg_query_decisions,
     mine_raw,

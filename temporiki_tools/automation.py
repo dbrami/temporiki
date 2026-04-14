@@ -4,9 +4,9 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from memoriki_tools.mempalace_chroma import is_chroma_available
-from memoriki_tools.mempalace_router import auto_mine
-from memoriki_tools.ops import ingest_delta, lint_wiki
+from temporiki_tools.mempalace_chroma import is_chroma_available
+from temporiki_tools.mempalace_router import auto_mine
+from temporiki_tools.ops import ingest_delta, lint_wiki
 
 
 def run_cycle(

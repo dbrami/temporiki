@@ -648,7 +648,7 @@ wheels = [
 ]
 
 [[package]]
-name = "memoriki-tools"
+name = "temporiki-tools"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

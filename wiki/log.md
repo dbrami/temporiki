@@ -11,4 +11,4 @@ type: log
 - Created directory structure (raw/, wiki/)
 - Created schema (CLAUDE.md)
 - Created index.md and log.md
-- Template: Memoriki (LLM Wiki + MemPalace)
+- Template: Temporiki (LLM Wiki + MemPalace)

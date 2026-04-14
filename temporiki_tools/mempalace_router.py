@@ -5,8 +5,8 @@ import re
 from pathlib import Path
 from typing import Any
 
-from memoriki_tools.mempalace_chroma import is_chroma_available, mine_chroma, search_chroma
-from memoriki_tools.mempalace_lite import kg_query_decisions, mine_raw, search_lite
+from temporiki_tools.mempalace_chroma import is_chroma_available, mine_chroma, search_chroma
+from temporiki_tools.mempalace_lite import kg_query_decisions, mine_raw, search_lite
 
 _DECISION_HINT_RE = re.compile(
     r"\b(decision|decisions|precedent|why|rationale|validity|as[- ]of|event clock)\b",
