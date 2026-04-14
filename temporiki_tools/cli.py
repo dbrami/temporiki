@@ -10,6 +10,7 @@ from temporiki_tools.automation import run_cycle
 from temporiki_tools.mempalace_chroma import is_chroma_available
 from temporiki_tools.mempalace_lite import init_lite, kg_query_decisions
 from temporiki_tools.mempalace_router import auto_mine, auto_search
+from temporiki_tools.onboarding import run_onboarding
 from temporiki_tools.obsidian_pack import install_ux_pack
 from temporiki_tools.ops import ingest_delta, lint_wiki, save_query_result
 
@@ -149,3 +150,9 @@ def palace_health() -> None:
 def obsidian_ux_pack(root: Path = Path(".")) -> None:
     created = install_ux_pack(root)
     typer.echo(json.dumps({"created": created}, indent=2))
+
+
+@app.command("onboard")
+def onboard(root: Path = Path(".")) -> None:
+    out = run_onboarding(root)
+    typer.echo(json.dumps(out, indent=2))

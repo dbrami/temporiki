@@ -49,6 +49,14 @@ Daily use:
 
 No manual `uv run ...` commands are required for normal use.
 
+If you prefer guided setup in-agent (inspired by `second-brain`):
+
+```bash
+uv run temporiki onboard
+```
+
+This prints a checklist and ensures folders/templates are ready.
+
 ## Demo
 
 Add a 15-30 second GIF or short Loom showing:
@@ -77,6 +85,7 @@ Temporiki is built on and significantly extended from the original Memoriki foun
 | Core pattern | Karpathy LLM Wiki | Karpathy LLM Wiki + temporal Context Graph |
 | Storage | Wiki-first, manual ops | Dual memory: SQLite FTS5 + Chroma (auto-routed) |
 | Daily UX | Manual Python command workflow | Zero-command daily flow (`./hooks/obsidian-zero.sh`) |
+| Guided onboarding | Manual docs-led setup | `temporiki onboard` checklist + structure bootstrap |
 | Obsidian integration | Basic vault usage | Web Clipper inbox + dashboards + templates |
 | Temporal reasoning | Limited explicit precedence tracking | Time-scoped decision KG with `as-of` query support |
 | Automation | Partial/manual | Background monitor (ingest, lint, health, indexing) |
@@ -85,6 +94,7 @@ Temporiki is built on and significantly extended from the original Memoriki foun
 
 ```bash
 uv run temporiki ingest
+uv run temporiki onboard
 uv run temporiki palace-mine
 uv run temporiki palace-search "auth decision"
 uv run temporiki palace-kg-query --as-of 2026-04-13
@@ -141,6 +151,7 @@ For day-to-day work:
 - MemPalace (reference architecture + MCP tool model): https://github.com/MemPalace/mempalace
 - Chroma docs (client/server model and API): https://docs.trychroma.com/
 - Obsidian Dataview plugin docs (dashboards/queries): https://blacksmithgu.github.io/obsidian-dataview/
+- NicholasSpisak/second-brain (onboarding + multi-agent skill packaging ideas): https://github.com/NicholasSpisak/second-brain
 
 ## License
 

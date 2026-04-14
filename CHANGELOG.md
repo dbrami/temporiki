@@ -6,6 +6,14 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-04-14
+### Added
+- `uv run temporiki onboard` guided setup command that bootstraps folder structure, templates, and setup checklist output.
+- `temporiki_tools.onboarding` module + onboarding tests.
+
+### Changed
+- README now documents the optional guided onboarding flow and explicitly references `NicholasSpisak/second-brain` as an upstream idea source.
+
 ## [0.1.1] - 2026-04-13
 ### Added
 - Version Guard CI workflow to enforce version bump + changelog updates for impactful runtime changes.
