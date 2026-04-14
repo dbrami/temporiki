@@ -78,6 +78,19 @@ uv run temporiki query "What decisions are active?" --answer "..."
 
 Any MCP-capable coding agent (Claude Code, Codex, Cursor, Gemini CLI, OpenCode, OpenClaw).
 
+## Versioning
+
+- SemVer tags are used (`vMAJOR.MINOR.PATCH`).
+- `pyproject.toml` is the authoritative package version.
+- `CHANGELOG.md` tracks release notes.
+- GitHub Releases are auto-created when a SemVer tag is pushed.
+
+Release command:
+```bash
+./scripts/release.sh 0.1.1
+git push origin main --follow-tags
+```
+
 ## Sources
 
 - Karpathy, Andrej — LLM Wiki pattern: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
