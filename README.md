@@ -133,7 +133,7 @@ Any MCP-capable coding agent (Claude Code, Codex, Cursor, Gemini CLI, OpenCode, 
 
 Release command:
 ```bash
-./scripts/release.sh 0.1.1
+./scripts/release.sh 0.1.2
 git push origin main --follow-tags
 ```
 
