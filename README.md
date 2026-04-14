@@ -34,19 +34,6 @@ cd temporiki
 
 Prefer a guided walkthrough? Run `uv run temporiki onboard` for an interactive checklist.
 
-## Why Temporiki?
-
-| | Plain Obsidian | Original Memoriki | Temporiki |
-|---|---|---|---|
-| Knowledge pattern | Manual notes | Karpathy LLM Wiki | LLM Wiki + temporal Context Graph |
-| Memory | None — files only | Wiki-first, manual | Dual-store: SQLite FTS5 + Chroma (auto-routed) |
-| Daily workflow | Manual organization | Python commands | Zero-command (clip, drop, ask) |
-| Guided onboarding | None | Manual docs-led | `temporiki onboard` checklist |
-| Web capture | Web Clipper to a folder | Not included | Web Clipper inbox with auto-ingest |
-| Temporal reasoning | None | Limited | Time-scoped decisions with `as-of` queries |
-| Background automation | None | Partial | Full (ingest, lint, health, indexing) |
-| Agent support | N/A | Claude-only | Any MCP-capable agent |
-
 ## Demo
 
 Add a 15-30 second GIF or short Loom showing:
@@ -59,6 +46,19 @@ Suggested embed:
 ```markdown
 ![Zero-command Temporiki flow](docs/media/temporiki-zero-flow.gif)
 ```
+
+## Why Temporiki?
+
+| | Plain Obsidian | Original Memoriki | Temporiki |
+|---|---|---|---|
+| Knowledge pattern | Manual notes | Karpathy LLM Wiki | LLM Wiki + temporal Context Graph |
+| Memory | None — files only | Wiki-first, manual | Dual-store: SQLite FTS5 + Chroma (auto-routed) |
+| Daily workflow | Manual organization | Python commands | Zero-command (clip, drop, ask) |
+| Guided onboarding | None | Manual docs-led | `temporiki onboard` checklist |
+| Web capture | Web Clipper to a folder | Not included | Web Clipper inbox with auto-ingest |
+| Temporal reasoning | None | Limited | Time-scoped decisions with `as-of` queries |
+| Background automation | None | Partial | Full (ingest, lint, health, indexing) |
+| Agent support | N/A | Claude-only | Any MCP-capable agent |
 
 ## Works With
 
