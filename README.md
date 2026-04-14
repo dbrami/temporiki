@@ -188,7 +188,7 @@ For day-to-day work:
 ## Sources
 
 - Karpathy, Andrej — LLM Wiki pattern: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
-- dbrami/Memoriki (original foundation): https://github.com/dbrami/memoriki
+- AyanbekDos/memoriki (original upstream fork source): https://github.com/AyanbekDos/memoriki
 - MemPalace (reference architecture + MCP tool model): https://github.com/MemPalace/mempalace
 - Chroma docs (client/server model and API): https://docs.trychroma.com/
 - Obsidian Dataview plugin docs (dashboards/queries): https://blacksmithgu.github.io/obsidian-dataview/
