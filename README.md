@@ -37,12 +37,15 @@ cd temporiki
 ./hooks/obsidian-zero.sh
 ```
 
-Then your daily flow is:
-1. Open Obsidian and create/select vault from the repo folder.
+One-time Obsidian setup:
+1. Open Obsidian and create/select a vault from the repo folder.
 2. Install/enable Obsidian Terminal and Web Clipper.
 3. Set Web Clipper target folder to `raw/webclips/`.
-4. Open a terminal inside Obsidian, launch your LLM CLI (`claude`, `codex`, `gemini`, etc.), and chat.
-5. New clips dropped into `raw/webclips/` are automatically detected, catalogued, and indexed by the background monitor.
+
+Daily use:
+1. Open Obsidian vault.
+2. Open a terminal inside Obsidian, launch your LLM CLI (`claude`, `codex`, `gemini`, etc.), and chat.
+3. Clip content to `raw/webclips/`; the background monitor auto-detects, catalogs, and indexes it.
 
 No manual `uv run ...` commands are required for normal use.
 
