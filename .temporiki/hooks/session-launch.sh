@@ -3,18 +3,23 @@ set -euo pipefail
 
 # Starts local Chroma server for Temporiki if Docker is available.
 # Safe to run repeatedly.
+# Set TEMPORIKI_BOOTSTRAP_DEBUG=1 to surface skip reasons.
 
 if [[ "${TEMPORIKI_DISABLE_CHROMA_AUTOSTART:-${MEMORIKI_DISABLE_CHROMA_AUTOSTART:-0}}" == "1" ]]; then
   exit 0
 fi
 
 if ! command -v docker >/dev/null 2>&1; then
-  echo "[temporiki] docker not found; skipping chroma autostart" >&2
+  if [[ "${TEMPORIKI_BOOTSTRAP_DEBUG:-0}" == "1" ]]; then
+    echo "[temporiki] docker not found; skipping chroma autostart" >&2
+  fi
   exit 0
 fi
 
 if ! docker info >/dev/null 2>&1; then
-  echo "[temporiki] docker daemon not running; skipping chroma autostart" >&2
+  if [[ "${TEMPORIKI_BOOTSTRAP_DEBUG:-0}" == "1" ]]; then
+    echo "[temporiki] docker daemon not running; skipping chroma autostart" >&2
+  fi
   exit 0
 fi
 

@@ -6,6 +6,12 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-04-14
+### Changed
+- `obsidian-zero.sh` output is now quieter: onboarding JSON is suppressed during bootstrap.
+- Non-actionable Docker skip warnings are hidden by default when Chroma autostart cannot run (set `TEMPORIKI_BOOTSTRAP_DEBUG=1` to show them).
+- Bootstrap completion text now reflects automatic `raw/webclips` attachment-path configuration (no manual setting step).
+
 ## [0.1.3] - 2026-04-14
 ### Added
 - Hidden system layout (`.temporiki/`) so Obsidian root view stays focused on knowledge folders (`raw/`, `wiki/`).

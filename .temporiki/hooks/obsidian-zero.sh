@@ -17,7 +17,7 @@ echo "[temporiki] syncing lightweight runtime..."
 uv sync --project "$PROJECT_DIR" --extra chroma-client
 
 echo "[temporiki] applying vault onboarding defaults..."
-uv --project "$PROJECT_DIR" run temporiki onboard
+uv --project "$PROJECT_DIR" run temporiki onboard >/dev/null
 
 echo "[temporiki] starting background monitor..."
 "$PROJECT_DIR/hooks/session-start.sh"
@@ -25,5 +25,5 @@ echo "[temporiki] starting background monitor..."
 echo
 echo "[temporiki] ready."
 echo "1) Open this folder as your Obsidian vault."
-echo "2) Set Web Clipper target folder to raw/webclips/."
-echo "3) Start your LLM CLI in this repo and chat."
+echo "2) Start your LLM CLI in this repo and chat."
+echo "   (Web Clipper attachment path is auto-set to raw/webclips.)"
