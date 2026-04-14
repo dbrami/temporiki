@@ -1,4 +1,4 @@
-# Memoriki
+# Temporiki
 
 Personal knowledge base with real memory. Combines [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) (Andrej Karpathy) + automatic dual-store memory:
 - local SQLite FTS5 (`mempalace-lite`) always on
@@ -9,7 +9,7 @@ Wiki gives structure. The router decides memory backend automatically.
 ## Architecture
 
 ```
-memoriki/
+temporiki/
   raw/                    # Immutable sources
   wiki/                   # LLM-maintained compiled knowledge
     index.md              # Catalog
@@ -30,8 +30,8 @@ memoriki/
 
 ```bash
 # 1. Clone your fork
-git clone https://github.com/dbrami/memoriki.git
-cd memoriki
+git clone https://github.com/dbrami/temporiki.git
+cd temporiki
 
 # 2. Create env and install dependencies
 uv venv
