@@ -76,10 +76,11 @@ updated: YYYY-MM-DD
 ### Ingest
 1. Run `uv --project .temporiki run temporiki ingest` to identify only new/changed sources (delta ingest).
    - default user inbox from Obsidian Web Clipper: `raw/webclips/`
+   - webclips are auto-archived post-ingest to `raw/webclips/_archive/YYYY-MM/` and wiki `sources:` paths are rewritten automatically.
 2. Run `uv --project .temporiki run temporiki palace-mine` to index `raw/`:
    - always into `.memplite/palace.sqlite3`
    - into Chroma too when Chroma is available
-3. Read changed sources from `raw/`.
+3. Read changed sources from `raw/` and `raw/webclips/_archive/`.
 4. Update `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, and `wiki/decisions/` as needed.
 5. Update `wiki/index.md`.
 6. Append log entry in `wiki/log.md`.
@@ -92,7 +93,8 @@ Default query flow for non-trivial questions:
    - otherwise hybrid rerank of Chroma + SQLite if Chroma is healthy
    - otherwise SQLite FTS5 fallback
 3. Return currently valid precedents plus `why` traces
-4. For high-value answers, save to `wiki/queries/` (use `uv --project .temporiki run temporiki query ...`)
+4. `palace-search` auto-saves high-confidence answers to `wiki/queries/` by default.
+5. For manual/curated save-back, use `uv --project .temporiki run temporiki query ...`.
 
 ### Session Hooks
 All hooks live in `.temporiki/hooks/` and are idempotent.
@@ -119,14 +121,17 @@ Run `uv --project .temporiki run temporiki lint --autofix` and fix:
 2. Invalid frontmatter schema
 3. Broken wikilinks
 4. Orphan pages
-5. Stale claims or contradictions
+5. Missing coverage in `wiki/index.md` (`missing_from_index`)
+6. Active decision conflicts on same topic (`decision_conflicts`)
+7. Stale claims or contradictions
 
 ### Obsidian UX Pack
 Run `uv --project .temporiki run temporiki obsidian-ux-pack` to install:
 1. Decision timeline dashboard
 2. Stale pages dashboard
 3. Wiki health dashboard
-4. Canonical templates for decisions and concepts
+4. Webclips activity dashboard (`wiki/meta/webclips-activity.md`)
+5. Canonical templates for decisions and concepts
 
 ## Logging Format
 Use this heading format in `wiki/log.md`:
