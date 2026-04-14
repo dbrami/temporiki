@@ -132,6 +132,27 @@ uv run temporiki query "What decisions are active?" --answer "..."
 - Web Clipper inbox at `raw/webclips/` with automatic ingest/index loop
 - Lightweight default install: no `chromadb`/`kubernetes` stack unless `--extra mempalace` is requested
 
+### Why RAG Alone Isn't Enough
+
+Most retrieval-augmented-generation systems rely on similarity in high-dimensional embedding spaces to pull context for the LLM. This has a well-known weakness — the [curse of dimensionality](https://en.wikipedia.org/wiki/Curse_of_dimensionality): as dimensions grow, distances between points become less discriminating, and "semantically similar" can drift from "actually relevant."
+
+A Stanford RegLab study of commercial legal RAG tools ([Magesh et al. 2025, *Journal of Empirical Legal Studies*](https://doi.org/10.1111/jels.12413)) measured hallucination rates of 17–33% on systems marketed as "hallucination-free." The paper identifies three failure modes that trace back to retrieval limitations:
+
+1. **Text-similar but irrelevant retrieval** — shared surface tokens (a name, a word) pulling unrelated sources
+2. **Temporal drift** — retrieved sources that were once correct but have been superseded
+3. **Misgrounding** — citations to real sources that don't actually support the claim
+
+Temporiki mitigates each of these with structural, not purely statistical, choices:
+
+| Failure mode | Temporiki's mitigation |
+|---|---|
+| Embedding-only retrieval is fragile | **Hybrid routing** — KG-first for decision queries, then lexical + vector rerank, then SQLite FTS5 fallback. No single similarity metric decides what's retrieved. |
+| Temporal drift | **Time-scoped decisions** with `validity_until` and `as-of` query filters. Superseded content is surfaced as such, not returned as current. |
+| Misgrounding | **Immutable `raw/` sources + YAML provenance** on every wiki page. Every claim links back to a specific source file; reasoning (`why_this_choice`, `precedent_references`) is stored separately from extracted facts. |
+| "Distracting" similar documents | **Context Graph layer** — explicit entity/decision/concept links, not just embedding proximity. Relevance is graph-walkable, not purely statistical. |
+
+Temporiki does not eliminate hallucinations — no RAG system does. It narrows the surface area where the common failure modes live.
+
 ### Versioning
 
 - SemVer tags are used (`vMAJOR.MINOR.PATCH`).
