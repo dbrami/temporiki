@@ -356,6 +356,8 @@ def lint_wiki(root: Path, autofix: bool = False) -> dict[str, list[str]]:
     missing_from_index: list[str] = []
     for page in sorted(pages):
         rel = _rel(page, root)
+        if rel.startswith("wiki/_templates/") or rel.startswith("wiki/meta/"):
+            continue
         rel_no_ext = rel[:-3] if rel.endswith(".md") else rel
         title = title_by_page.get(rel, "")
         if rel in index_links or rel_no_ext in index_links or (title and title in index_links):

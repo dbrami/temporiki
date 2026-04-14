@@ -98,6 +98,37 @@ def test_lint_wiki_reports_orphans_and_missing_frontmatter(tmp_path: Path) -> No
     assert "wiki/concepts/a.md" in report["missing_from_index"]
 
 
+def test_lint_wiki_ignores_templates_and_meta_for_missing_from_index(tmp_path: Path) -> None:
+    write(
+        tmp_path / "wiki" / "_templates" / "concept.md",
+        "---\n"
+        "title: Concept Template\n"
+        "type: concept\n"
+        "sources: []\n"
+        "related: []\n"
+        "created: 2026-04-14\n"
+        "updated: 2026-04-14\n"
+        "---\n\nTemplate.\n",
+    )
+    write(
+        tmp_path / "wiki" / "meta" / "dashboard.md",
+        "---\n"
+        "title: Dashboard\n"
+        "type: synthesis\n"
+        "sources: []\n"
+        "related: []\n"
+        "created: 2026-04-14\n"
+        "updated: 2026-04-14\n"
+        "---\n\nDashboard.\n",
+    )
+    write(tmp_path / "wiki" / "index.md", "# Index\n")
+    write(tmp_path / "wiki" / "log.md", "# Log\n")
+
+    report = lint_wiki(tmp_path)
+    assert "wiki/_templates/concept.md" not in report["missing_from_index"]
+    assert "wiki/meta/dashboard.md" not in report["missing_from_index"]
+
+
 def test_lint_wiki_flags_active_decision_conflicts(tmp_path: Path) -> None:
     write(
         tmp_path / "wiki" / "decisions" / "a.md",

@@ -17,10 +17,23 @@ from temporiki_tools.ops import ingest_delta, lint_wiki, save_query_result
 app = typer.Typer(no_args_is_help=True)
 
 
+def _coerce_float(value: object, default: float = 0.0) -> float:
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, int | float):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return default
+    return default
+
+
 def _top_confidence(results: list[dict[str, object]]) -> float:
     if not results:
         return 0.0
-    return float(results[0].get("confidence", 0.0))
+    return _coerce_float(results[0].get("confidence", 0.0))
 
 
 def _render_auto_answer(results: list[dict[str, object]], max_items: int = 3) -> str:
@@ -28,7 +41,7 @@ def _render_auto_answer(results: list[dict[str, object]], max_items: int = 3) ->
     for i, r in enumerate(results[:max_items], start=1):
         text = str(r.get("text", "")).strip().replace("\n", " ")
         source = str(r.get("source_file", ""))
-        confidence = float(r.get("confidence", 0.0))
+        confidence = _coerce_float(r.get("confidence", 0.0))
         provenance = str(r.get("provenance", ""))
         if len(text) > 240:
             text = text[:237] + "..."

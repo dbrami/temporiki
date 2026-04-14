@@ -182,14 +182,14 @@ def _date_or_none(s: str | None) -> dt.date | None:
         return None
 
 
-def kg_query_decisions(root: Path, topic: str | None = None, as_of: str | None = None) -> list[dict[str, str]]:
+def kg_query_decisions(root: Path, topic: str | None = None, as_of: str | None = None) -> list[dict[str, Any]]:
     root = root.resolve()
     as_of_date = dt.date.fromisoformat(as_of) if as_of else dt.date.today()
     decision_dir = root / "wiki" / "decisions"
     if not decision_dir.exists():
         return []
 
-    out: list[dict[str, str]] = []
+    out: list[dict[str, Any]] = []
     for path in sorted(decision_dir.glob("*.md")):
         fm = _parse_frontmatter(path.read_text(encoding="utf-8"))
         if not fm:

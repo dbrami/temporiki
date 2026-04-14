@@ -41,7 +41,10 @@ def _client():
 
 
 def is_chroma_available() -> bool:
-    c = _client()
+    try:
+        c = _client()
+    except Exception:
+        return False
     if c is None:
         return False
     try:
@@ -114,7 +117,7 @@ def search_chroma(
     if col is None:
         return []
 
-    where: dict[str, str] | None = None
+    where: dict[str, Any] | None = None
     if wing and room:
         where = {"$and": [{"wing": wing}, {"room": room}]}
     elif wing:
