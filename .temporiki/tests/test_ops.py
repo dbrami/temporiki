@@ -32,7 +32,7 @@ def test_ingest_delta_tracks_only_new_or_changed_sources(tmp_path: Path) -> None
 
 
 def test_ingest_delta_relocates_clippings_into_raw_webclips(tmp_path: Path) -> None:
-    write(tmp_path / "Clippings" / "clip.md", "first")
+    write(tmp_path / "clippings" / "clip.md", "first")
     write(tmp_path / "raw" / "webclips" / "clip.md", "existing")
     write(tmp_path / "wiki" / "index.md", "# Index\n")
     write(tmp_path / "wiki" / "log.md", "# Log\n")
@@ -40,9 +40,22 @@ def test_ingest_delta_relocates_clippings_into_raw_webclips(tmp_path: Path) -> N
     changed = ingest_delta(tmp_path)
     assert {item["path"] for item in changed} == {"raw/webclips/clip-1.md", "raw/webclips/clip.md"}
 
+    assert not (tmp_path / "clippings").exists()
     assert not (tmp_path / "Clippings").exists()
     assert (tmp_path / "raw" / "webclips" / "clip.md").read_text(encoding="utf-8") == "existing"
     assert (tmp_path / "raw" / "webclips" / "clip-1.md").read_text(encoding="utf-8") == "first"
+
+
+def test_ingest_delta_relocates_multiple_case_clippings_dirs(tmp_path: Path) -> None:
+    write(tmp_path / "Clippings" / "upper.md", "upper")
+    write(tmp_path / "clippings" / "lower.md", "lower")
+    write(tmp_path / "wiki" / "index.md", "# Index\n")
+    write(tmp_path / "wiki" / "log.md", "# Log\n")
+
+    changed = ingest_delta(tmp_path)
+    assert {item["path"] for item in changed} == {"raw/webclips/lower.md", "raw/webclips/upper.md"}
+    assert not (tmp_path / "Clippings").exists()
+    assert not (tmp_path / "clippings").exists()
 
 
 def test_archive_webclips_moves_and_rewrites_sources(tmp_path: Path) -> None:

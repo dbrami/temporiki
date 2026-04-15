@@ -74,25 +74,30 @@ def _move_to_dir(src: Path, dst_dir: Path) -> Path:
 
 
 def _relocate_clippings_to_webclips(root: Path) -> list[str]:
-    clippings_dir = root / "Clippings"
-    if not clippings_dir.is_dir():
-        return []
-
     webclips_dir = root / "raw" / "webclips"
     webclips_dir.mkdir(parents=True, exist_ok=True)
 
-    moved: list[str] = []
-    for entry in sorted(clippings_dir.iterdir()):
-        if entry.name == ".gitkeep":
-            continue
-        target = _move_to_dir(entry, webclips_dir)
-        moved.append(_rel(target, root))
+    clippings_dirs = sorted(
+        path
+        for path in root.iterdir()
+        if path.is_dir() and path.name.casefold() == "clippings"
+    )
+    if not clippings_dirs:
+        return []
 
-    try:
-        clippings_dir.rmdir()
-    except OSError:
-        # Non-empty directory should not break ingestion; future cycles can retry.
-        pass
+    moved: list[str] = []
+    for clippings_dir in clippings_dirs:
+        for entry in sorted(clippings_dir.iterdir()):
+            if entry.name == ".gitkeep":
+                continue
+            target = _move_to_dir(entry, webclips_dir)
+            moved.append(_rel(target, root))
+
+        try:
+            clippings_dir.rmdir()
+        except OSError:
+            # Non-empty directory should not break ingestion; future cycles can retry.
+            pass
 
     return moved
 
