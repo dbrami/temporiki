@@ -38,7 +38,16 @@ Prefer a guided walkthrough? Run `uv --project .temporiki run temporiki onboard`
 
 ## Demo
 
-https://github.com/user-attachments/assets/36ee3290-afec-4fb3-a758-2c15bbf3f63a
+Add a 15-30 second GIF or short Loom showing:
+1. Drop a clipped page into `raw/webclips/`.
+2. Obsidian vault reflects updated knowledge pages.
+3. LLM terminal query returns temporal answer with citations.
+
+Suggested embed:
+
+```markdown
+![Zero-command Temporiki flow](docs/media/temporiki-zero-flow.gif)
+```
 
 ## Why Temporiki?
 
