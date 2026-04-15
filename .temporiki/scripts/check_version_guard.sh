@@ -9,10 +9,30 @@ fi
 BASE="$1"
 HEAD="${2:-HEAD}"
 PROJECT_DIR=".temporiki"
+README_PATH="README.md"
 
 if [[ "$BASE" =~ ^0+$ ]]; then
   echo "[version-guard] initial push detected; skipping guard"
   exit 0
+fi
+
+pyproject_version="$(
+  sed -nE 's/^version = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/p' "$PROJECT_DIR/pyproject.toml" \
+    | head -n1
+)"
+readme_version="$(
+  sed -nE 's#^!\[Version\]\(https://img\.shields\.io/badge/version-([0-9]+\.[0-9]+\.[0-9]+)-informational\)$#\1#p' "$README_PATH" \
+    | head -n1
+)"
+
+if [[ -z "$pyproject_version" || -z "$readme_version" ]]; then
+  echo "[version-guard] could not parse version from $PROJECT_DIR/pyproject.toml or $README_PATH"
+  exit 1
+fi
+
+if [[ "$pyproject_version" != "$readme_version" ]]; then
+  echo "[version-guard] README version badge ($readme_version) does not match pyproject ($pyproject_version)"
+  exit 1
 fi
 
 if ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then

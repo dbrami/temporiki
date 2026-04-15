@@ -15,6 +15,7 @@ fi
 
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 PROJECT_DIR="$ROOT_DIR/.temporiki"
+SYNC_SCRIPT="$PROJECT_DIR/scripts/sync_readme_version.sh"
 cd "$ROOT_DIR"
 
 if [[ -n "$(git status --porcelain)" ]]; then
@@ -28,11 +29,12 @@ if git rev-parse "v$VERSION" >/dev/null 2>&1; then
 fi
 
 perl -0pi -e "s/version = \"[0-9]+\\.[0-9]+\\.[0-9]+\"/version = \"$VERSION\"/" "$PROJECT_DIR/pyproject.toml"
+"$SYNC_SCRIPT"
 
 TODAY="$(date +%F)"
 perl -0pi -e "s/## \\[Unreleased\\]\\n/## [Unreleased]\\n\\n## [$VERSION] - $TODAY\\n/" "$PROJECT_DIR/CHANGELOG.md"
 
-git add "$PROJECT_DIR/pyproject.toml" "$PROJECT_DIR/CHANGELOG.md"
+git add "$PROJECT_DIR/pyproject.toml" "$PROJECT_DIR/CHANGELOG.md" "$ROOT_DIR/README.md"
 git commit -m "Release v$VERSION"
 git tag "v$VERSION"
 

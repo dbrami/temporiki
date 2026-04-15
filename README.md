@@ -7,7 +7,7 @@ Clip articles, save meeting notes, drop transcripts and files — Temporiki auto
 Built on Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern. Runs locally with Obsidian. Works with any MCP-capable AI agent.
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-0.1.2-informational)
+![Version](https://img.shields.io/badge/version-0.1.6-informational)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![GitHub stars](https://img.shields.io/github/stars/dbrami/temporiki?style=social)
 

@@ -14,6 +14,7 @@ fi
 
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 PROJECT_DIR="$ROOT_DIR/.temporiki"
+SYNC_SCRIPT="$PROJECT_DIR/scripts/sync_readme_version.sh"
 cd "$ROOT_DIR"
 
 CURRENT="$(
@@ -43,6 +44,7 @@ NEXT="${MAJOR}.${MINOR}.${PATCH}"
 TODAY="$(date +%F)"
 
 perl -0pi -e "s/version = \"[0-9]+\\.[0-9]+\\.[0-9]+\"/version = \"$NEXT\"/" "$PROJECT_DIR/pyproject.toml"
+"$SYNC_SCRIPT"
 perl -0pi -e "s/## \\[Unreleased\\]\\n/## [Unreleased]\\n\\n## [$NEXT] - $TODAY\\n/" "$PROJECT_DIR/CHANGELOG.md"
 
 echo "Version bumped: $CURRENT -> $NEXT"
