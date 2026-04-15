@@ -19,11 +19,15 @@ uv sync --project "$PROJECT_DIR" --extra chroma-client
 echo "[temporiki] applying vault onboarding defaults..."
 uv --project "$PROJECT_DIR" run temporiki onboard >/dev/null
 
-echo "[temporiki] starting background monitor..."
-"$PROJECT_DIR/hooks/session-start.sh"
+echo "[temporiki] enabling event automation..."
+"$PROJECT_DIR/hooks/scheduler-install.sh"
+
+echo "[temporiki] running session setup..."
+"$PROJECT_DIR/hooks/session-start.sh" >/dev/null
 
 echo
 echo "[temporiki] ready."
 echo "1) Open this folder as your Obsidian vault."
 echo "2) Start your LLM CLI in this repo and chat."
 echo "   (Web Clipper attachment path is auto-set to raw/webclips.)"
+echo "3) No recurring startup command is required."

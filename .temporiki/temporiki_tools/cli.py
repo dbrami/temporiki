@@ -133,6 +133,51 @@ def palace_auto(
         time.sleep(max(1, watch_interval_seconds))
 
 
+@app.command("palace-event")
+def palace_event(
+    root: Path = Path("."),
+    lint_every_seconds: int = 300,
+    health_every_seconds: int = 120,
+    lint_autofix: bool = True,
+) -> None:
+    """
+    Single-run event handler with persisted lint/health cadence state.
+    Intended for OS scheduler triggers (launchd/systemd/Task Scheduler).
+    """
+    root = root.resolve()
+    state_dir = root / ".memplite"
+    state_dir.mkdir(parents=True, exist_ok=True)
+    state_path = state_dir / "event-state.json"
+
+    now = time.time()
+    state: dict[str, float] = {"last_lint_at": 0.0, "last_health_at": 0.0}
+    if state_path.exists():
+        try:
+            loaded = json.loads(state_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                state["last_lint_at"] = float(loaded.get("last_lint_at", 0.0) or 0.0)
+                state["last_health_at"] = float(loaded.get("last_health_at", 0.0) or 0.0)
+        except Exception:
+            state = {"last_lint_at": 0.0, "last_health_at": 0.0}
+
+    run_lint_now = (now - state["last_lint_at"]) >= max(1, lint_every_seconds)
+    run_health_now = (now - state["last_health_at"]) >= max(1, health_every_seconds)
+
+    report = run_cycle(
+        root=root,
+        run_lint=run_lint_now,
+        run_health=run_health_now,
+        lint_autofix=lint_autofix,
+    )
+    typer.echo(json.dumps(report, indent=2))
+
+    if run_lint_now:
+        state["last_lint_at"] = now
+    if run_health_now:
+        state["last_health_at"] = now
+    state_path.write_text(json.dumps(state, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
+
+
 @app.command("palace-init")
 def palace_init(root: Path = Path(".")) -> None:
     db = init_lite(root)

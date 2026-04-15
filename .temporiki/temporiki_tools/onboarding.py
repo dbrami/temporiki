@@ -49,7 +49,8 @@ def run_onboarding(root: Path) -> dict[str, object]:
         "Enable Obsidian Terminal and Web Clipper plugins",
         "Web Clipper target: raw/webclips/",
         "Start your LLM CLI in repo terminal (claude/codex/gemini)",
-        "Run ./.temporiki/hooks/session-start.sh once per shell session",
+        "Run one-time init: ./.temporiki/hooks/obsidian-zero.sh",
+        "No recurring startup command is required",
     ]
     return {
         "root": str(root),

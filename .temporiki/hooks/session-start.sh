@@ -19,21 +19,12 @@ uv --project "$PROJECT_DIR" run temporiki onboard >/dev/null 2>&1 || true
 # 1) Bring up Chroma if possible (no-op if Docker unavailable).
 "$PROJECT_DIR/hooks/session-launch.sh" || true
 
-# 2) Start auto monitor daemon if not already running.
+# 2) Ensure runtime state dir exists.
 mkdir -p "$ROOT_DIR/.memplite"
-PID_FILE="$ROOT_DIR/.memplite/auto.pid"
-LOG_FILE="$ROOT_DIR/.memplite/auto.log"
 
-if [[ -f "$PID_FILE" ]]; then
-  PID="$(cat "$PID_FILE" 2>/dev/null || true)"
-  if [[ -n "$PID" ]] && ps -p "$PID" >/dev/null 2>&1; then
-    echo "[temporiki] auto monitor already running (pid=$PID)"
-    exit 0
-  fi
-fi
-
-nohup uv --project "$PROJECT_DIR" run temporiki palace-auto >"$LOG_FILE" 2>&1 &
-NEW_PID=$!
-echo "$NEW_PID" > "$PID_FILE"
-
-echo "[temporiki] auto monitor started (pid=$NEW_PID, log=$LOG_FILE)"
+cat <<'MSG'
+[temporiki] session ready.
+[temporiki] automation is event-driven (no always-on daemon).
+[temporiki] if this repo was not bootstrapped with obsidian-zero:
+  ./.temporiki/hooks/scheduler-install.sh
+MSG

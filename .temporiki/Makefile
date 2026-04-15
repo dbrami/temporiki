@@ -1,4 +1,4 @@
-.PHONY: sync sync-mempalace sync-chroma-client test ingest lint lint-autofix watch palace-init palace-mine palace-search palace-kg-query palace-health session-launch palace-auto session-start session-stop obsidian-ux-pack obsidian-zero
+.PHONY: sync sync-mempalace sync-chroma-client test ingest lint lint-autofix watch palace-init palace-mine palace-search palace-kg-query palace-health palace-event session-launch palace-auto session-start session-stop scheduler-install scheduler-uninstall obsidian-ux-pack obsidian-zero
 
 sync:
 	uv sync --project .temporiki --extra dev
@@ -39,6 +39,9 @@ palace-kg-query:
 palace-health:
 	uv --project .temporiki run temporiki palace-health
 
+palace-event:
+	uv --project .temporiki run temporiki palace-event
+
 session-launch:
 	./.temporiki/hooks/session-launch.sh
 
@@ -50,6 +53,12 @@ session-start:
 
 session-stop:
 	./.temporiki/hooks/session-stop.sh
+
+scheduler-install:
+	./.temporiki/hooks/scheduler-install.sh
+
+scheduler-uninstall:
+	./.temporiki/hooks/scheduler-uninstall.sh
 
 obsidian-ux-pack:
 	uv --project .temporiki run temporiki obsidian-ux-pack

@@ -5,16 +5,18 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PID_FILE="$ROOT_DIR/.memplite/auto.pid"
 
 if [[ ! -f "$PID_FILE" ]]; then
-  echo "[temporiki] no auto monitor pid file"
-  exit 0
-fi
-
-PID="$(cat "$PID_FILE" 2>/dev/null || true)"
-if [[ -n "$PID" ]] && ps -p "$PID" >/dev/null 2>&1; then
-  kill "$PID" || true
-  echo "[temporiki] auto monitor stopped (pid=$PID)"
+  echo "[temporiki] no legacy daemon pid file"
 else
-  echo "[temporiki] auto monitor was not running"
+  PID="$(cat "$PID_FILE" 2>/dev/null || true)"
+  if [[ -n "$PID" ]] && ps -p "$PID" >/dev/null 2>&1; then
+    kill "$PID" || true
+    echo "[temporiki] legacy auto monitor stopped (pid=$PID)"
+  else
+    echo "[temporiki] legacy auto monitor was not running"
+  fi
+  rm -f "$PID_FILE"
 fi
 
-rm -f "$PID_FILE"
+if [[ "${TEMPORIKI_UNINSTALL_SCHEDULER_ON_STOP:-0}" == "1" ]]; then
+  "$ROOT_DIR/.temporiki/hooks/scheduler-uninstall.sh" || true
+fi
