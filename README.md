@@ -38,9 +38,7 @@ Prefer a guided walkthrough? Run `uv --project .temporiki run temporiki onboard`
 
 ## Demo
 
-https://github.com/dbrami/temporiki/raw/main/docs/media/temporiki-setup.mp4
-
-<video src="docs/media/temporiki-setup.mp4" controls width="720"></video>
+https://github.com/user-attachments/assets/36ee3290-afec-4fb3-a758-2c15bbf3f63a
 
 ## Why Temporiki?
 
