@@ -56,6 +56,7 @@ if [[ "$UNAME_S" == "Linux" ]]; then
   UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
   SERVICE="temporiki-auto-$SHORT_HASH.service"
   PATH_UNIT="temporiki-auto-$SHORT_HASH.path"
+  TIMER_UNIT="temporiki-auto-$SHORT_HASH.timer"
   mkdir -p "$UNIT_DIR"
   mkdir -p "$ROOT_DIR/.memplite"
 
@@ -69,13 +70,35 @@ WorkingDirectory=$ROOT_DIR
 ExecStart=$ROOT_DIR/.temporiki/hooks/auto-run-once.sh
 EOF
 
+  # systemd.path watches are not recursive. PathModified fires only for direct
+  # children of raw/. Watch raw/ plus its top-level subdirectories so changes
+  # inside raw/webclips/ and raw/assets/ still trigger ingest. A low-frequency
+  # timer provides a deep-recursion safety net (e.g. raw/webclips/_archive/**).
+  PATH_LINES="PathExists=$ROOT_DIR/raw"$'\n'"PathModified=$ROOT_DIR/raw"$'\n'"PathChanged=$ROOT_DIR/raw"
+  for sub in "$ROOT_DIR/raw/webclips" "$ROOT_DIR/raw/assets"; do
+    mkdir -p "$sub"
+    PATH_LINES+=$'\n'"PathModified=$sub"$'\n'"PathChanged=$sub"
+  done
+
   cat >"$UNIT_DIR/$PATH_UNIT" <<EOF
 [Unit]
 Description=Watch Temporiki raw/ for changes ($SHORT_HASH)
 
 [Path]
-PathExists=$ROOT_DIR/raw
-PathModified=$ROOT_DIR/raw
+$PATH_LINES
+Unit=$SERVICE
+
+[Install]
+WantedBy=default.target
+EOF
+
+  cat >"$UNIT_DIR/$TIMER_UNIT" <<EOF
+[Unit]
+Description=Temporiki recursive safety-net sweep ($SHORT_HASH)
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
 Unit=$SERVICE
 
 [Install]
@@ -84,7 +107,8 @@ EOF
 
   systemctl --user daemon-reload
   systemctl --user enable --now "$PATH_UNIT"
-  echo "[temporiki] systemd user path scheduler installed: $PATH_UNIT"
+  systemctl --user enable --now "$TIMER_UNIT"
+  echo "[temporiki] systemd user path+timer scheduler installed: $PATH_UNIT, $TIMER_UNIT"
   exit 0
 fi
 

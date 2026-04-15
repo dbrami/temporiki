@@ -29,11 +29,13 @@ fi
 if [[ "$UNAME_S" == "Linux" ]]; then
   SERVICE="temporiki-auto-$SHORT_HASH.service"
   PATH_UNIT="temporiki-auto-$SHORT_HASH.path"
+  TIMER_UNIT="temporiki-auto-$SHORT_HASH.timer"
   UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
   systemctl --user disable --now "$PATH_UNIT" >/dev/null 2>&1 || true
-  rm -f "$UNIT_DIR/$PATH_UNIT" "$UNIT_DIR/$SERVICE"
+  systemctl --user disable --now "$TIMER_UNIT" >/dev/null 2>&1 || true
+  rm -f "$UNIT_DIR/$PATH_UNIT" "$UNIT_DIR/$TIMER_UNIT" "$UNIT_DIR/$SERVICE"
   systemctl --user daemon-reload
-  echo "[temporiki] systemd user scheduler removed: $PATH_UNIT"
+  echo "[temporiki] systemd user scheduler removed: $PATH_UNIT, $TIMER_UNIT"
   exit 0
 fi
 
