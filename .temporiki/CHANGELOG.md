@@ -6,6 +6,17 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-15
+### Added
+- In-vault Obsidian plugin (`.temporiki/obsidian-plugin/`) that listens to `vault.on('create'|'modify')` under `raw/`, debounces 2s, and spawns `temporiki palace-event` via a safe argv-based process launch — no OS-level watcher, no resident daemon.
+- Router-lazy ingest guard `temporiki_tools/stale.py` (`should_run_ingest(root)`). `palace-search` and `palace-kg-query` now run `run_event_cycle(root)` before answering if any `raw/` file is newer than `.manifest.json:updated_at`, so Finder/CLI drops while Obsidian is closed still produce correct results.
+- `run_event_cycle()` in `temporiki_tools/automation.py` — single entry point reused by the plugin (eager path) and the lazy-router guard.
+- One-shot migration cleanup in `obsidian-zero.sh` that unloads/removes any residual pre-plugin launchd plists (macOS), systemd path+timer units (Linux), or Task Scheduler entries (Windows).
+- Onboarding now enables the `temporiki-autoingest` community plugin in `.obsidian/community-plugins.json` and symlinks `.temporiki/obsidian-plugin/` into `.obsidian/plugins/temporiki-autoingest/`.
+
+### Removed
+- `scheduler-install.sh`, `scheduler-uninstall.sh`, `auto-run-once.sh`, and `hooks/windows/temporiki-auto-once.ps1`. Ingestion is now triggered entirely from inside the repo (plugin + router guard). Prior installs are cleaned up automatically on next `obsidian-zero.sh` run.
+
 ## [0.1.6] - 2026-04-14
 ### Added
 - Auto-save for high-confidence `palace-search` results into `wiki/queries/` (compounding query knowledge by default).

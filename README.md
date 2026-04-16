@@ -7,7 +7,7 @@ Clip articles, save meeting notes, drop transcripts and files — Temporiki auto
 Built on Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern. Runs locally with Obsidian. Works with any MCP-capable AI agent.
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-0.1.6-informational)
+![Version](https://img.shields.io/badge/version-0.2.0-informational)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![GitHub stars](https://img.shields.io/github/stars/dbrami/temporiki?style=social)
 
@@ -15,7 +15,7 @@ Built on Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893
 
 **1. Capture** — Clip web pages with Obsidian Web Clipper, paste meeting notes, or drop any file into `raw/`. `raw/webclips/` is ingress-only.
 
-**2. Organize** — Temporiki reads your sources, extracts key facts and decisions, creates linked wiki pages, indexes everything for search, and auto-moves processed webclips to `raw/webclips/_archive/YYYY-MM/` (with wiki `sources:` links rewritten). Automation is event-driven via OS scheduler hooks (no always-on daemon).
+**2. Organize** — Temporiki reads your sources, extracts key facts and decisions, creates linked wiki pages, indexes everything for search, and auto-moves processed webclips to `raw/webclips/_archive/YYYY-MM/` (with wiki `sources:` links rewritten). Ingest is driven by a tiny in-vault Obsidian plugin while Obsidian is open, and by a lazy staleness check at query time when it isn't — no OS-level watcher, no resident daemon.
 
 **3. Ask** — Query your knowledge base in natural language. Get answers grounded in your own material, with citations and timestamps so you know where it came from and when.
 High-confidence `palace-search` results are auto-saved into `wiki/queries/` so insights compound instead of staying in chat.
@@ -60,7 +60,7 @@ Suggested embed:
 | Web capture | Web Clipper to a folder | Not included | Web Clipper inbox with auto-ingest |
 | Inbox clutter | User-managed | User-managed | `raw/webclips/` ingress + immediate auto-archive |
 | Temporal reasoning | None | Limited | Time-scoped decisions with `as-of` queries |
-| Background automation | None | Partial | Event-driven one-shot cycles (ingest, lint, health, indexing) |
+| Background automation | None | Partial | In-vault plugin + router-lazy ingest (no OS watcher, no daemon) |
 | Agent support | N/A | Claude-only | Any MCP-capable agent |
 
 ## Works With
@@ -102,8 +102,9 @@ One-time Obsidian setup:
 Daily use:
 1. Open Obsidian vault.
 2. Open a terminal inside Obsidian, launch your LLM CLI (`claude`, `codex`, `gemini`, etc.), and chat.
-3. Clip content to `raw/webclips/`; scheduler-triggered one-shot runs auto-detect, catalog, and index it.
+3. Clip content to `raw/webclips/`; the Temporiki Auto-Ingest plugin fires within ~2s and indexes the new source.
 4. Processed clips are moved to `raw/webclips/_archive/YYYY-MM/` automatically.
+5. Files dropped into `raw/` via Finder or CLI while Obsidian is closed get picked up on the next `palace-search` / `palace-kg-query` via a lazy staleness check — no missing context.
 
 No manual `uv run ...` commands are required for normal use.
 
@@ -135,7 +136,8 @@ uv --project .temporiki run temporiki query "What decisions are active?" --answe
 - Pydantic + YAML schema validation with lint autofix support
 - Context Graph mode guidance in `.temporiki/AGENTS.md` (`wiki/decisions/` + temporal precedence)
 - Session-launch hook for local Chroma Docker autostart
-- Cross-OS scheduler install hooks (`.temporiki/hooks/scheduler-install.sh` / `.temporiki/hooks/scheduler-uninstall.sh`)
+- In-vault Obsidian plugin (`.temporiki/obsidian-plugin/`) for eager ingest on vault create/modify events
+- Router-lazy ingest guard (`.temporiki/temporiki_tools/stale.py`) ensures `palace-search` and `palace-kg-query` run against a fresh manifest even when Obsidian never opened
 - Web Clipper inbox at `raw/webclips/` with automatic ingest/index loop
 - Webclips activity dashboard at `wiki/meta/webclips-activity.md` (inbox + recent archives)
 - Lightweight default install: no `chromadb`/`kubernetes` stack unless `--extra mempalace` is requested

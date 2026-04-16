@@ -102,20 +102,22 @@ All hooks live in `.temporiki/hooks/` and are idempotent.
 **First-time bootstrap (one-time):** `./.temporiki/hooks/obsidian-zero.sh`
 1. Scaffolds `raw/webclips`, `raw/assets`, `wiki/queries`, `wiki/meta`, `wiki/_templates`.
 2. Runs `uv sync --project .temporiki --extra chroma-client`.
-3. Applies `temporiki onboard` defaults (including Obsidian Web Clipper attachment path).
-4. Installs cross-OS event scheduler automation.
-5. Runs initial runtime setup (`session-start.sh`) with optional Chroma autostart.
+3. Applies `temporiki onboard` defaults (Obsidian Web Clipper attachment path, enables the `temporiki-autoingest` community plugin).
+4. Symlinks `.temporiki/obsidian-plugin/` into `.obsidian/plugins/temporiki-autoingest/`.
+5. One-shot migration cleanup: removes any residual launchd plists / systemd units / Windows scheduled tasks from pre-plugin installs.
+6. Runs initial runtime setup (`session-start.sh`) with optional Chroma autostart.
 
-**Event-driven automation (no resident daemon):**
-1. Scheduler watches `raw/` and triggers one-shot `temporiki palace-event` runs.
-2. Lint/health cadence state is persisted in `.memplite/event-state.json`.
-3. Webclips are auto-archived post-ingest to `raw/webclips/_archive/YYYY-MM/`.
+**Ingest triggering (no resident daemon, no OS scheduler):**
+1. **Eager path (Obsidian open)** — the in-vault plugin listens to `vault.on('create'|'modify')` under `raw/`, debounces 2s, and spawns `temporiki palace-event --root <vault>` via Node's safe argv-based process launch (no shell interpolation).
+2. **Lazy path (Obsidian closed)** — `palace-search` and `palace-kg-query` call `stale.should_run_ingest(root)` before querying; if any `raw/` file has mtime newer than `.manifest.json:updated_at`, they run `run_event_cycle(root)` first so the answer is correct.
+3. Lint/health cadence state is persisted in `.memplite/event-state.json` regardless of which path fired.
+4. Webclips are auto-archived post-ingest to `raw/webclips/_archive/YYYY-MM/`.
 
 **Chroma-only launch:** `./.temporiki/hooks/session-launch.sh`
 Starts/reuses the `temporiki-chroma` Docker container on `${TEMPORIKI_CHROMA_PORT:-8000}` with data at `.chroma-data/`. No-op when Docker is unavailable.
 
 **Session stop:** `./.temporiki/hooks/session-stop.sh`
-Cleans up any legacy daemon pid file and optionally uninstalls scheduler when `TEMPORIKI_UNINSTALL_SCHEDULER_ON_STOP=1`.
+Cleans up any legacy daemon pid file. (OS scheduler uninstall is no longer needed — the one-shot migration in `obsidian-zero.sh` handles that once.)
 
 ### Lint
 Run `uv --project .temporiki run temporiki lint --autofix` and fix:

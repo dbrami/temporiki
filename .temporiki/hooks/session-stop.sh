@@ -16,7 +16,3 @@ else
   fi
   rm -f "$PID_FILE"
 fi
-
-if [[ "${TEMPORIKI_UNINSTALL_SCHEDULER_ON_STOP:-0}" == "1" ]]; then
-  "$ROOT_DIR/.temporiki/hooks/scheduler-uninstall.sh" || true
-fi

@@ -25,6 +25,28 @@ def _upsert_obsidian_files_and_links_defaults(root: Path) -> dict[str, object]:
     return current
 
 
+def _enable_autoingest_plugin(root: Path) -> list[str]:
+    plugins_path = root / ".obsidian" / "community-plugins.json"
+    plugins_path.parent.mkdir(parents=True, exist_ok=True)
+
+    enabled: list[str] = []
+    if plugins_path.exists():
+        try:
+            loaded = json.loads(plugins_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, list):
+                enabled = [str(x) for x in loaded]
+        except Exception:
+            enabled = []
+
+    if "temporiki-autoingest" not in enabled:
+        enabled.append("temporiki-autoingest")
+        plugins_path.write_text(
+            json.dumps(enabled, ensure_ascii=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    return enabled
+
+
 def run_onboarding(root: Path) -> dict[str, object]:
     root = root.resolve()
     dirs = [
@@ -44,6 +66,7 @@ def run_onboarding(root: Path) -> dict[str, object]:
 
     created = install_ux_pack(root)
     obsidian_app = _upsert_obsidian_files_and_links_defaults(root)
+    enabled_plugins = _enable_autoingest_plugin(root)
     checklist = [
         "Open Obsidian and select this repo folder as vault",
         "Enable Obsidian Terminal and Web Clipper plugins",
@@ -56,5 +79,6 @@ def run_onboarding(root: Path) -> dict[str, object]:
         "root": str(root),
         "created": created,
         "obsidian_attachment_folder_path": str(obsidian_app.get("attachmentFolderPath", "")),
+        "enabled_community_plugins": enabled_plugins,
         "checklist": checklist,
     }

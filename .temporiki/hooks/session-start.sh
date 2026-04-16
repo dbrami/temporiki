@@ -24,7 +24,7 @@ mkdir -p "$ROOT_DIR/.memplite"
 
 cat <<'MSG'
 [temporiki] session ready.
-[temporiki] automation is event-driven (no always-on daemon).
-[temporiki] if this repo was not bootstrapped with obsidian-zero:
-  ./.temporiki/hooks/scheduler-install.sh
+[temporiki] ingest is plugin-driven (eager) + router-lazy (on query).
+[temporiki] if this repo was not bootstrapped:
+  ./.temporiki/hooks/obsidian-zero.sh
 MSG

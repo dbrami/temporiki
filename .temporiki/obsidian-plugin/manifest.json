@@ -1,0 +1,10 @@
+{
+  "id": "temporiki-autoingest",
+  "name": "Temporiki Auto-Ingest",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Runs `temporiki palace-event` whenever files under raw/ change, keeping the vault index fresh without an OS-level watcher.",
+  "author": "Daniel Brami",
+  "authorUrl": "https://github.com/dbrami/temporiki",
+  "isDesktopOnly": true
+}
