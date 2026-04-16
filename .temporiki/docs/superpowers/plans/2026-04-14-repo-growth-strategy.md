@@ -163,7 +163,7 @@ uv run temporiki query "What decisions are active?" --answer "..."
 - Pydantic + YAML schema validation with lint autofix support
 - Context Graph mode guidance in `AGENTS.md` (`wiki/decisions/` + temporal precedence)
 - Session-launch hook for local Chroma Docker autostart
-- Cross-OS scheduler install hooks (`hooks/scheduler-install.sh` / `hooks/scheduler-uninstall.sh`) for automatic monitoring
+- Encapsulated hybrid ingest trigger (0.2.0+): in-vault Obsidian plugin for eager events + router-lazy staleness guard in `palace-search` / `palace-kg-query`; no OS-level scheduler
 - Web Clipper inbox at `raw/webclips/` with automatic ingest/index loop
 - Lightweight default install: no `chromadb`/`kubernetes` stack unless `--extra mempalace` is requested
 
