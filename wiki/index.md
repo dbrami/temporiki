@@ -1,7 +1,7 @@
 ---
 title: Wiki Index
 type: index
-updated: 2026-04-09
+updated: 2026-04-16
 ---
 
 # Wiki Index
@@ -17,3 +17,7 @@ updated: 2026-04-09
 ## Sources
 
 ## Synthesis
+
+## Decisions
+
+- [[Decision on Replacing OS File Watcher with Encapsulated Hybrid Ingest Trigger]] — 0.2.0: in-vault Obsidian plugin + router-lazy staleness guard
