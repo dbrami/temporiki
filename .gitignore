@@ -36,5 +36,9 @@ node_modules/
 
 # Claude Code local config
 .claude.json
+.claude/
+
+# Obsidian vault - personal configuration, not shared
+.obsidian/
 
 *.egg-info/
